@@ -11,6 +11,8 @@
 #import <AVFoundation/AVFoundation.h>
 
 
+static float backgroundVolume = 0.2;
+
 @interface JYAudioRecorder()<AVAudioPlayerDelegate>
 
 @property(nonatomic,strong)AVAudioEngine *audioEngine;
@@ -21,6 +23,7 @@
 @property(nonatomic) AVAudioPlayer *audioBGPlayer;
 
 @property(nonatomic,strong)NSString *filePath;
+@property(nonatomic,strong)NSString *fileBGPath;
 
 @property(atomic)BOOL isRec;
 @property(atomic)BOOL isPlaying;
@@ -47,10 +50,10 @@
 
 #pragma mark -
 -(void)startRecord{
-    [self startRecordWithSection:0];
+    [self startRecordFromSection:0];
 }
 
--(void)startRecordWithSection:(float)second{
+-(void)startRecordFromSection:(float)second{
     
     if (self.isRec || self.isPlaying) {
         return;
@@ -61,14 +64,14 @@
     
     // 设置AVAudioSession
     NSError *error;
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker error:&error];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord mode:AVAudioSessionModeSpokenAudio options:AVAudioSessionCategoryOptionDefaultToSpeaker error:&error];
     assert(error == nil);
     [[AVAudioSession sharedInstance] setActive:YES error:&error];
     assert(error == nil);
     
     
     // 创建播放文件
-    AVAudioFile *audiofile = [[AVAudioFile alloc] initForReading:[[NSBundle mainBundle] URLForResource:@"1" withExtension:@"mp3"] error:&error];
+    AVAudioFile *audiofile = [[AVAudioFile alloc] initForReading:[NSURL URLWithString:self.fileBGPath] error:&error];
     assert(error == nil);
     
     
@@ -175,6 +178,7 @@
     
     
     // 开始播放
+    self.audioPlayerNode.volume = backgroundVolume;
     [self.audioPlayerNode play];
     
 }
@@ -194,11 +198,21 @@
     }
 }
 
+
+#pragma mark -
+-(NSString *)fileBGPath{
+    if (_fileBGPath == nil) {
+        _fileBGPath = [[[NSBundle mainBundle] URLForResource:@"1" withExtension:@"mp3"] relativePath];
+    }
+    return _fileBGPath;
+}
 #pragma  mark -
 -(void)stopPlay{
     if (self.isPlaying) {
         
         [[AVAudioSession sharedInstance] setActive:NO error:nil];
+        [self.audioPlayer stop];
+        [self.audioBGPlayer stop];
         
         self.isPlaying = NO;
         NSLog(@"stoped play");
@@ -228,23 +242,39 @@
     [[AVAudioSession sharedInstance] setActive:YES error:&error];
     assert(error == nil);
     
+    
     self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:self.filePath] error:&error];
     assert(error == nil);
-
-    [self.audioPlayer play];
+    
+    self.audioBGPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:self.fileBGPath] error:&error];
+    assert(error == nil);
+    
+    
     self.audioPlayer.delegate = self;
-
+    self.audioBGPlayer.delegate = self;
+    
+    self.audioBGPlayer.volume = backgroundVolume;
+    
+    [self.audioPlayer play];
+    [self.audioBGPlayer play];
+    
 }
 
 #pragma mark - AVAudioPlayerDelegate
 -(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
     NSLog(@"audioPlayerDidFinishPlaying");
-    self.isPlaying = NO;
+    if (player == self.audioPlayer) {
+        [self.audioBGPlayer stop];
+        self.isPlaying = NO;
+    }
 }
 
 -(void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error{
     NSLog(@"audioPlayerDecodeErrorDidOccur");
-    self.isPlaying = NO;
+    if (player == self.audioPlayer) {
+        [self.audioBGPlayer stop];
+        self.isPlaying = NO;
+    }
 }
 
 

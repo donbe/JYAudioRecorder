@@ -81,7 +81,7 @@
 }
 
 -(void)pauseBtnAction{
-    [self.recorder startRecordWithSection:1];
+    [self.recorder startRecordFromSection:1];
 }
 
 -(void)playBtnAction{

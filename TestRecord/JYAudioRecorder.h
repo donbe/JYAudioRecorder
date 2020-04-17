@@ -16,16 +16,23 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)startRecord;
 
 // 从某个时间点往后录音
--(void)startRecordWithSection:(float)second;
+-(void)startRecordFromSection:(float)second;
+
+// 暂停录音
+-(void)pausePlay;
 
 // 停止录音
 -(void)stopRecord;
 
+#pragma mark -
 // 播放录音
 -(void)play;
 
 // 停止播放录音
 -(void)stopPlay;
+
+// 暂停播放录音
+-(void)pausePlay;
 
 @end
 
