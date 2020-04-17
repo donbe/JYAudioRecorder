@@ -1,9 +1,9 @@
 //
 //  JYAudioRecorder.h
-//  QKRight
+//  TestRecord
 //
 //  Created by donbe on 2020/4/13.
-//  Copyright © 2020 卢仕彤. All rights reserved.
+//  Copyright © 2020 donbe. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

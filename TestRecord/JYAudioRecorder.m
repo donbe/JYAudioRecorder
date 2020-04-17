@@ -1,9 +1,9 @@
 //
 //  JYAudioRecorder.m
-//  QKRight
+//  TestRecord
 //
 //  Created by donbe on 2020/4/13.
-//  Copyright © 2020 卢仕彤. All rights reserved.
+//  Copyright © 2020 donbe. All rights reserved.
 //
 
 #import "JYAudioRecorder.h"
@@ -18,6 +18,7 @@
 @property(nonatomic,strong)AVAudioPlayerNode *audioPlayerNode;
 
 @property(nonatomic) AVAudioPlayer *audioPlayer;
+@property(nonatomic) AVAudioPlayer *audioBGPlayer;
 
 @property(nonatomic,strong)NSString *filePath;
 
@@ -83,7 +84,7 @@
     // 存储的文件格式
     AVAudioFormat *formatOut = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:16000 channels:1 interleaved:true];
     
-    //计算从多少byte开始截断
+    // 计算从多少byte开始截断
     UInt32 truncateByte = 0;
     switch (formatOut.commonFormat) {
         case AVAudioPCMFormatInt16:
@@ -173,7 +174,7 @@
     assert(result);
     
     
-    //开始播放
+    // 开始播放
     [self.audioPlayerNode play];
     
 }
