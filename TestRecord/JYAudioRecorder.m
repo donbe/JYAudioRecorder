@@ -186,8 +186,6 @@
         
         [self.audioEngine.inputNode removeTapOnBus:0];
         
-        
-        
         [[AVAudioSession sharedInstance] setActive:NO error:nil];
         
         self.isRec = NO;
@@ -218,6 +216,7 @@
     if (self.filePath == nil) {
         return;
     }
+    
     self.isPlaying = YES;
     NSLog(@"begin play");
 
