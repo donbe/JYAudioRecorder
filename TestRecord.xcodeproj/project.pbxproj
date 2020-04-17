@@ -16,6 +16,8 @@
 		36E0DB83244547B400C2AF11 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E0DB82244547B400C2AF11 /* main.m */; };
 		36E0DB8D244547B400C2AF11 /* TestRecordTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E0DB8C244547B400C2AF11 /* TestRecordTests.m */; };
 		36E0DB98244547B400C2AF11 /* TestRecordUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E0DB97244547B400C2AF11 /* TestRecordUITests.m */; };
+		36E0DBA9244548A100C2AF11 /* JYAudioRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E0DBA8244548A100C2AF11 /* JYAudioRecorder.m */; };
+		36E0DBAB24454A1300C2AF11 /* 1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 36E0DBAA24454A1300C2AF11 /* 1.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +56,9 @@
 		36E0DB93244547B400C2AF11 /* TestRecordUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TestRecordUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		36E0DB97244547B400C2AF11 /* TestRecordUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestRecordUITests.m; sourceTree = "<group>"; };
 		36E0DB99244547B400C2AF11 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		36E0DBA7244548A000C2AF11 /* JYAudioRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYAudioRecorder.h; sourceTree = "<group>"; };
+		36E0DBA8244548A100C2AF11 /* JYAudioRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYAudioRecorder.m; sourceTree = "<group>"; };
+		36E0DBAA24454A1300C2AF11 /* 1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = 1.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,12 +109,15 @@
 		36E0DB6F244547B000C2AF11 /* TestRecord */ = {
 			isa = PBXGroup;
 			children = (
+				36E0DBAA24454A1300C2AF11 /* 1.mp3 */,
+				36E0DBA7244548A000C2AF11 /* JYAudioRecorder.h */,
+				36E0DBA8244548A100C2AF11 /* JYAudioRecorder.m */,
+				36E0DB76244547B000C2AF11 /* ViewController.h */,
+				36E0DB77244547B000C2AF11 /* ViewController.m */,
 				36E0DB70244547B000C2AF11 /* AppDelegate.h */,
 				36E0DB71244547B000C2AF11 /* AppDelegate.m */,
 				36E0DB73244547B000C2AF11 /* SceneDelegate.h */,
 				36E0DB74244547B000C2AF11 /* SceneDelegate.m */,
-				36E0DB76244547B000C2AF11 /* ViewController.h */,
-				36E0DB77244547B000C2AF11 /* ViewController.m */,
 				36E0DB79244547B000C2AF11 /* Main.storyboard */,
 				36E0DB7C244547B400C2AF11 /* Assets.xcassets */,
 				36E0DB7E244547B400C2AF11 /* LaunchScreen.storyboard */,
@@ -240,6 +248,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				36E0DBAB24454A1300C2AF11 /* 1.mp3 in Resources */,
 				36E0DB80244547B400C2AF11 /* LaunchScreen.storyboard in Resources */,
 				36E0DB7D244547B400C2AF11 /* Assets.xcassets in Resources */,
 				36E0DB7B244547B000C2AF11 /* Main.storyboard in Resources */,
@@ -269,6 +278,7 @@
 			files = (
 				36E0DB78244547B000C2AF11 /* ViewController.m in Sources */,
 				36E0DB72244547B000C2AF11 /* AppDelegate.m in Sources */,
+				36E0DBA9244548A100C2AF11 /* JYAudioRecorder.m in Sources */,
 				36E0DB83244547B400C2AF11 /* main.m in Sources */,
 				36E0DB75244547B000C2AF11 /* SceneDelegate.m in Sources */,
 			);
@@ -442,6 +452,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DXU7P74W58;
 				INFOPLIST_FILE = TestRecord/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -459,6 +470,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DXU7P74W58;
 				INFOPLIST_FILE = TestRecord/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
