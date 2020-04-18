@@ -49,10 +49,10 @@ static float backgroundVolume = 0.2;
 
 #pragma mark -
 -(void)startRecord{
-    [self startRecordFromSection:0];
+    [self startRecordFromTime:0];
 }
 
--(void)startRecordFromSection:(float)second{
+-(void)startRecordFromTime:(NSTimeInterval)time{
     
     if (self.isRec || self.isPlaying) {
         return;
@@ -93,16 +93,16 @@ static float backgroundVolume = 0.2;
     UInt32 truncateByte = 0;
     switch (formatOut.commonFormat) {
         case AVAudioPCMFormatInt16:
-            truncateByte = (UInt32)(second * formatOut.sampleRate * formatOut.channelCount * 2);
+            truncateByte = (UInt32)(time * formatOut.sampleRate * formatOut.channelCount * 2);
             break;
         case AVAudioPCMFormatInt32:
-            truncateByte = (UInt32)(second * formatOut.sampleRate * formatOut.channelCount * 4);
+            truncateByte = (UInt32)(time * formatOut.sampleRate * formatOut.channelCount * 4);
             break;
         case AVAudioPCMFormatFloat32:
-            truncateByte = (UInt32)(second * formatOut.sampleRate * formatOut.channelCount * 5);
+            truncateByte = (UInt32)(time * formatOut.sampleRate * formatOut.channelCount * 5);
             break;
         case AVAudioPCMFormatFloat64:
-            truncateByte = (UInt32)(second * formatOut.sampleRate * formatOut.channelCount * 8);
+            truncateByte = (UInt32)(time * formatOut.sampleRate * formatOut.channelCount * 8);
             break;
         default:
             assert(0);

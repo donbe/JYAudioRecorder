@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)startRecord;
 
 // 从某个时间点往后录音
--(void)startRecordFromSection:(float)second;
+-(void)startRecordFromTime:(NSTimeInterval)second;
 
 // 停止录音
 -(void)stopRecord;
