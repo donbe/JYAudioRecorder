@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		360817B4244A9B3B00916438 /* output.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 360817B3244A9B3B00916438 /* output.mp3 */; };
 		36E0DB72244547B000C2AF11 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E0DB71244547B000C2AF11 /* AppDelegate.m */; };
 		36E0DB75244547B000C2AF11 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E0DB74244547B000C2AF11 /* SceneDelegate.m */; };
 		36E0DB78244547B000C2AF11 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E0DB77244547B000C2AF11 /* ViewController.m */; };
@@ -38,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		360817B3244A9B3B00916438 /* output.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = output.mp3; sourceTree = "<group>"; };
 		36E0DB6D244547B000C2AF11 /* TestRecord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestRecord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		36E0DB70244547B000C2AF11 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		36E0DB71244547B000C2AF11 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				36E0DBAA24454A1300C2AF11 /* 1.mp3 */,
+				360817B3244A9B3B00916438 /* output.mp3 */,
 				36E0DBA7244548A000C2AF11 /* JYAudioRecorder.h */,
 				36E0DBA8244548A100C2AF11 /* JYAudioRecorder.m */,
 				36E0DB76244547B000C2AF11 /* ViewController.h */,
@@ -251,6 +254,7 @@
 				36E0DBAB24454A1300C2AF11 /* 1.mp3 in Resources */,
 				36E0DB80244547B400C2AF11 /* LaunchScreen.storyboard in Resources */,
 				36E0DB7D244547B400C2AF11 /* Assets.xcassets in Resources */,
+				360817B4244A9B3B00916438 /* output.mp3 in Resources */,
 				36E0DB7B244547B000C2AF11 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -450,7 +454,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = DXU7P74W58;
+				DEVELOPMENT_TEAM = J238R6UW9K;
 				INFOPLIST_FILE = TestRecord/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -468,7 +472,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = DXU7P74W58;
+				DEVELOPMENT_TEAM = J238R6UW9K;
 				INFOPLIST_FILE = TestRecord/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (

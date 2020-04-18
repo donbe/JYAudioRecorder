@@ -9,7 +9,7 @@
 #import "JYAudioRecorder.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <AVFoundation/AVFoundation.h>
-
+#import <UIKit/UIKit.h>
 
 static float backgroundVolume = 0.2;
 
@@ -22,11 +22,10 @@ static float backgroundVolume = 0.2;
 @property(nonatomic) AVAudioPlayer *audioPlayer;
 @property(nonatomic) AVAudioPlayer *audioBGPlayer;
 
+@property(nonatomic) NSTimeInterval pausePoint;
+
 @property(nonatomic,strong)NSString *filePath;
 @property(nonatomic,strong)NSString *fileBGPath;
-
-@property(atomic)BOOL isRec;
-@property(atomic)BOOL isPlaying;
 
 @end
 
@@ -109,7 +108,7 @@ static float backgroundVolume = 0.2;
     
     
     // 打开文件，处理截断
-    AudioFileID fileID;
+    __block AudioFileID fileID;
     {
         char buf[truncateByte];
         UInt32 pos = truncateByte;
@@ -139,6 +138,9 @@ static float backgroundVolume = 0.2;
     __block SInt64 inStartingByte = truncateByte;
     [self.audioEngine.inputNode installTapOnBus:0 bufferSize:2048 format:nil block:^(AVAudioPCMBuffer * _Nonnull buffer, AVAudioTime * _Nonnull when) {
 
+        // 文件可能已经被关闭
+        if (fileID==nil)
+            return;
         
         // 进行格式换砖
         float ratio = [[buffer format] sampleRate]/formatOut.sampleRate;
@@ -166,10 +168,12 @@ static float backgroundVolume = 0.2;
     // 播放设置
     [self.audioPlayerNode scheduleSegment:audiofile startingFrame:0 frameCount:(AVAudioFrameCount)[audiofile length] atTime:nil completionHandler:^{
         AudioFileClose(fileID);
+        fileID = nil;
         NSLog(@"player complete");
-        
     }];
     
+    //准备一秒的缓存
+    [self.audioPlayerNode prepareWithFrameCount:(AVAudioFrameCount)audiofile.fileFormat.sampleRate];
   
     // 启动引擎
     BOOL result = [self.audioEngine startAndReturnError:&error];
@@ -198,26 +202,15 @@ static float backgroundVolume = 0.2;
     }
 }
 
-
 #pragma mark -
 -(NSString *)fileBGPath{
     if (_fileBGPath == nil) {
-        _fileBGPath = [[[NSBundle mainBundle] URLForResource:@"1" withExtension:@"mp3"] relativePath];
+        _fileBGPath = [[[NSBundle mainBundle] URLForResource:@"output" withExtension:@"mp3"] relativePath];
     }
     return _fileBGPath;
 }
 #pragma  mark -
--(void)stopPlay{
-    if (self.isPlaying) {
-        
-        [[AVAudioSession sharedInstance] setActive:NO error:nil];
-        [self.audioPlayer stop];
-        [self.audioBGPlayer stop];
-        
-        self.isPlaying = NO;
-        NSLog(@"stoped play");
-    }
-}
+
 
 -(void)play{
     
@@ -255,10 +248,48 @@ static float backgroundVolume = 0.2;
     
     self.audioBGPlayer.volume = backgroundVolume;
     
-    [self.audioPlayer play];
-    [self.audioBGPlayer play];
+
+    // 同步两个播放器，背景音乐需要再延后一点，老机型相对延迟会更大一些
+    NSTimeInterval shortStartDelay = 0.01;
+    NSTimeInterval shortBGStartDelay = [self isIphoneX] ? 0.17 : 0.20;
+    NSTimeInterval now = self.audioPlayer.deviceCurrentTime;
+
+    
+    [self.audioPlayer playAtTime: now + shortStartDelay];
+    [self.audioBGPlayer playAtTime: now + shortStartDelay + shortBGStartDelay];
     
 }
+
+-(void)pausePlay{
+    
+    
+    [self.audioPlayer stop];
+    [self.audioBGPlayer stop];
+    
+}
+
+-(void)resumePlay{
+   
+    [self.audioPlayer prepareToPlay];
+    [self.audioBGPlayer prepareToPlay];
+    
+   [self.audioPlayer play];
+   [self.audioBGPlayer play];
+    
+}
+
+-(void)stopPlay{
+    if (self.isPlaying) {
+        
+        [[AVAudioSession sharedInstance] setActive:NO error:nil];
+        [self.audioPlayer stop];
+        [self.audioBGPlayer stop];
+        
+        self.isPlaying = NO;
+        NSLog(@"stoped play");
+    }
+}
+
 
 #pragma mark - AVAudioPlayerDelegate
 -(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
@@ -338,4 +369,11 @@ static float backgroundVolume = 0.2;
     
 }
 
+-(BOOL)isIphoneX{
+    BOOL isPhoneX = NO;
+         if (@available(iOS 11.0, *)) {
+             isPhoneX = [[UIApplication sharedApplication].windows firstObject].safeAreaInsets.bottom > 0.0;
+        }
+    return isPhoneX;
+}
 @end

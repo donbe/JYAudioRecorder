@@ -70,6 +70,26 @@
     [stopplay setTitle:@"停止播放" forState:UIControlStateNormal];
     [stopplay addTarget:self action:@selector(stopplayBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:stopplay];
+    
+    
+    UIButton *paushplay = [[UIButton alloc] initWithFrame:CGRectMake(200, 260, 100, 50)];
+    paushplay.layer.borderColor = [UIColor blackColor].CGColor;
+    paushplay.layer.borderWidth = 0.5;
+    [paushplay setTitleColor:[UIColor redColor] forState:UIControlStateHighlighted];
+    [paushplay setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [paushplay setTitle:@"暂停播放" forState:UIControlStateNormal];
+    [paushplay addTarget:self action:@selector(paushplayBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:paushplay];
+    
+    
+    UIButton *resumeplay = [[UIButton alloc] initWithFrame:CGRectMake(200, 330, 100, 50)];
+    resumeplay.layer.borderColor = [UIColor blackColor].CGColor;
+    resumeplay.layer.borderWidth = 0.5;
+    [resumeplay setTitleColor:[UIColor redColor] forState:UIControlStateHighlighted];
+    [resumeplay setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [resumeplay setTitle:@"继续播放" forState:UIControlStateNormal];
+    [resumeplay addTarget:self action:@selector(resumeplayBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:resumeplay];
 }
 
 -(void)recordBtnAction{
@@ -92,6 +112,13 @@
     [self.recorder stopPlay];
 }
 
+-(void)paushplayBtnAction{
+    [self.recorder pausePlay];
+}
+
+-(void)resumeplayBtnAction{
+    [self.recorder resumePlay];
+}
 
 #pragma mark -
 -(JYAudioRecorder *)recorder{

@@ -12,14 +12,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface JYAudioRecorder : NSObject
 
+@property(atomic)BOOL isRec; //录制状态
+
+@property(atomic)BOOL isPlaying; //播放状态
+
 // 重头开始录音
 -(void)startRecord;
 
 // 从某个时间点往后录音
 -(void)startRecordFromSection:(float)second;
-
-// 暂停录音
--(void)pausePlay;
 
 // 停止录音
 -(void)stopRecord;
@@ -33,6 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // 暂停播放录音
 -(void)pausePlay;
+
+// 继续播放
+-(void)resumePlay;
 
 @end
 
