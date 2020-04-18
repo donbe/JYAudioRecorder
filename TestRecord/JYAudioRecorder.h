@@ -12,8 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface JYAudioRecorder : NSObject
 
+@property(nonatomic,strong)NSString *fileBGPath; //背景音地址
 @property(atomic)BOOL isRec; //录制状态
-
 @property(atomic)BOOL isPlaying; //播放状态
 
 // 重头开始录音

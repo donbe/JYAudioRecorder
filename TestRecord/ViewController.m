@@ -93,6 +93,7 @@
 }
 
 -(void)recordBtnAction{
+    self.recorder.fileBGPath = [[[NSBundle mainBundle] URLForResource:@"output" withExtension:@"mp3"] relativePath];
     [self.recorder startRecord];
 }
 

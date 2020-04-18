@@ -24,8 +24,8 @@ static float backgroundVolume = 0.2;
 
 @property(nonatomic) NSTimeInterval pausePoint;
 
-@property(nonatomic,strong)NSString *filePath;
-@property(nonatomic,strong)NSString *fileBGPath;
+@property(nonatomic,strong)NSString *recordFilePath;
+@property(nonatomic)AudioFileID recordFileID;
 
 @end
 
@@ -70,23 +70,26 @@ static float backgroundVolume = 0.2;
     
     
     // 创建播放文件
-    AVAudioFile *audiofile = [[AVAudioFile alloc] initForReading:[NSURL URLWithString:self.fileBGPath] error:&error];
-    assert(error == nil);
-    
-    
-    // 连接node
-    [self.audioEngine connect:self.audioPlayerNode to:self.audioEngine.mainMixerNode format:audiofile.processingFormat];
+    AVAudioFile *audiofile;
+    if (self.fileBGPath) {
+        audiofile = [[AVAudioFile alloc] initForReading:[NSURL URLWithString:self.fileBGPath] error:&error];
+        assert(error == nil);
+        
+        // 连接背景音乐node
+        [self.audioEngine connect:self.audioPlayerNode to:self.audioEngine.mainMixerNode format:audiofile.processingFormat];
+    }
     
     
     // 存储文件路径
     NSString *dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-    self.filePath =  [dir stringByAppendingString:@"/temp2.wav"];
+    self.recordFilePath =  [dir stringByAppendingString:@"/temp2.wav"];
 
     
     // 存储的文件格式
     AVAudioFormat *formatOut = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:16000 channels:1 interleaved:true];
     
-    // 计算从多少byte开始截断
+    
+    // 继续录音的情况，计算从多少byte开始截断
     UInt32 truncateByte = 0;
     switch (formatOut.commonFormat) {
         case AVAudioPCMFormatInt16:
@@ -108,24 +111,23 @@ static float backgroundVolume = 0.2;
     
     
     // 打开文件，处理截断
-    __block AudioFileID fileID;
     {
         char buf[truncateByte];
         UInt32 pos = truncateByte;
         if (truncateByte>0) {
-            OSStatus stats = AudioFileOpenURL((__bridge CFURLRef)[NSURL URLWithString:self.filePath], kAudioFileReadPermission, kAudioFileWAVEType, &fileID);
+            OSStatus stats = AudioFileOpenURL((__bridge CFURLRef)[NSURL URLWithString:self.recordFilePath], kAudioFileReadPermission, kAudioFileWAVEType, &_recordFileID);
             assert(stats==0);
-            AudioFileReadBytes(fileID, NO, 0, &pos, buf);
-            AudioFileClose(fileID);
+            AudioFileReadBytes(_recordFileID, NO, 0, &pos, buf);
+            AudioFileClose(_recordFileID);
         }
         
         // 重新创建文件
-        OSStatus stats = AudioFileCreateWithURL((__bridge CFURLRef)[NSURL URLWithString:self.filePath], kAudioFileWAVEType, formatOut.streamDescription, kAudioFileFlags_EraseFile, &fileID);
+        OSStatus stats = AudioFileCreateWithURL((__bridge CFURLRef)[NSURL URLWithString:self.recordFilePath], kAudioFileWAVEType, formatOut.streamDescription, kAudioFileFlags_EraseFile, &_recordFileID);
         assert(stats==0);
         
         // 重新写入需要保留的部分
         if (truncateByte > 0) {
-            AudioFileWriteBytes(fileID, NO, 0, &pos, buf);
+            AudioFileWriteBytes(_recordFileID, NO, 0, &pos, buf);
         }
     }
     
@@ -136,10 +138,11 @@ static float backgroundVolume = 0.2;
     
     // 安装tap
     __block SInt64 inStartingByte = truncateByte;
+    __weak JYAudioRecorder *weakSelf = self;
     [self.audioEngine.inputNode installTapOnBus:0 bufferSize:2048 format:nil block:^(AVAudioPCMBuffer * _Nonnull buffer, AVAudioTime * _Nonnull when) {
 
         // 文件可能已经被关闭
-        if (fileID==nil)
+        if (weakSelf.recordFileID == nil)
             return;
         
         // 进行格式换砖
@@ -155,7 +158,7 @@ static float backgroundVolume = 0.2;
 
         // 写文件
         UInt32 length = convertedBuffer.frameLength * 2;
-        OSStatus status = AudioFileWriteBytes(fileID, NO, inStartingByte, &length, convertedBuffer.int16ChannelData[0]);
+        OSStatus status = AudioFileWriteBytes(weakSelf.recordFileID, NO, inStartingByte, &length, convertedBuffer.int16ChannelData[0]);
         assert(status == noErr);
         inStartingByte += length;
         
@@ -166,15 +169,16 @@ static float backgroundVolume = 0.2;
     
     
     // 播放设置
-    [self.audioPlayerNode scheduleSegment:audiofile startingFrame:0 frameCount:(AVAudioFrameCount)[audiofile length] atTime:nil completionHandler:^{
-        AudioFileClose(fileID);
-        fileID = nil;
-        NSLog(@"player complete");
-    }];
+    if (audiofile) {
+        [self.audioPlayerNode scheduleSegment:audiofile startingFrame:0 frameCount:(AVAudioFrameCount)[audiofile length] atTime:nil completionHandler:^{
+            NSLog(@"player complete");
+        }];
+        
+        //准备一秒的缓存
+        [self.audioPlayerNode prepareWithFrameCount:(AVAudioFrameCount)audiofile.fileFormat.sampleRate];
+    }
     
-    //准备一秒的缓存
-    [self.audioPlayerNode prepareWithFrameCount:(AVAudioFrameCount)audiofile.fileFormat.sampleRate];
-  
+
     // 启动引擎
     BOOL result = [self.audioEngine startAndReturnError:&error];
     assert(error == nil);
@@ -182,9 +186,10 @@ static float backgroundVolume = 0.2;
     
     
     // 开始播放
-    self.audioPlayerNode.volume = backgroundVolume;
-    [self.audioPlayerNode play];
-    
+    if (audiofile) {
+        self.audioPlayerNode.volume = backgroundVolume;
+        [self.audioPlayerNode play];
+    }
 }
 
 -(void)stopRecord{
@@ -195,6 +200,9 @@ static float backgroundVolume = 0.2;
         
         [self.audioEngine.inputNode removeTapOnBus:0];
         
+        AudioFileClose(self.recordFileID);
+        self.recordFileID = nil;
+        
         [[AVAudioSession sharedInstance] setActive:NO error:nil];
         
         self.isRec = NO;
@@ -202,15 +210,8 @@ static float backgroundVolume = 0.2;
     }
 }
 
-#pragma mark -
--(NSString *)fileBGPath{
-    if (_fileBGPath == nil) {
-        _fileBGPath = [[[NSBundle mainBundle] URLForResource:@"output" withExtension:@"mp3"] relativePath];
-    }
-    return _fileBGPath;
-}
-#pragma  mark -
 
+#pragma  mark -
 
 -(void)play{
     
@@ -221,7 +222,7 @@ static float backgroundVolume = 0.2;
         return;
     }
 
-    if (self.filePath == nil) {
+    if (self.recordFilePath == nil) {
         return;
     }
     
@@ -236,19 +237,21 @@ static float backgroundVolume = 0.2;
     assert(error == nil);
     
     
-    self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:self.filePath] error:&error];
+    self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:self.recordFilePath] error:&error];
     assert(error == nil);
     
-    self.audioBGPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:self.fileBGPath] error:&error];
-    assert(error == nil);
-    
+    self.audioBGPlayer = nil;
+    if (self.fileBGPath) {
+        self.audioBGPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:self.fileBGPath] error:&error];
+        assert(error == nil);
+    }
     
     self.audioPlayer.delegate = self;
     self.audioBGPlayer.delegate = self;
     
     self.audioBGPlayer.volume = backgroundVolume;
-    
 
+    
     // 同步两个播放器，背景音乐需要再延后一点，老机型相对延迟会更大一些
     NSTimeInterval shortStartDelay = 0.01;
     NSTimeInterval shortBGStartDelay = [self isIphoneX] ? 0.17 : 0.20;
@@ -257,11 +260,9 @@ static float backgroundVolume = 0.2;
     
     [self.audioPlayer playAtTime: now + shortStartDelay];
     [self.audioBGPlayer playAtTime: now + shortStartDelay + shortBGStartDelay];
-    
 }
 
 -(void)pausePlay{
-    
     
     [self.audioPlayer stop];
     [self.audioBGPlayer stop];
@@ -312,7 +313,7 @@ static float backgroundVolume = 0.2;
 #pragma mark - help
 -(void)print_wav_head_info{
     
-    NSData *d = [[NSFileManager defaultManager] contentsAtPath:self.filePath];
+    NSData *d = [[NSFileManager defaultManager] contentsAtPath:self.recordFilePath];
     
     // RIFF
     const char *bs = (char *)d.bytes;
