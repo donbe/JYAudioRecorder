@@ -7,8 +7,6 @@
 //
 
 #import "JYAudioRecorder.h"
-#import <AudioToolbox/AudioToolbox.h>
-#import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
 static float backgroundVolume = 0.2;
@@ -42,6 +40,7 @@ static float backgroundVolume = 0.2;
         [self.audioEngine attachNode:self.audioPlayerNode];
         [self.audioEngine attachNode:self.audioMixerNode];
         
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterruptionNotification:) name:AVAudioSessionInterruptionNotification object:nil];
     }
     return self;
 }
@@ -256,7 +255,6 @@ static float backgroundVolume = 0.2;
     NSTimeInterval shortStartDelay = 0.01;
     NSTimeInterval shortBGStartDelay = [self isIphoneX] ? 0.17 : 0.20;
     NSTimeInterval now = self.audioPlayer.deviceCurrentTime;
-
     
     [self.audioPlayer playAtTime: now + shortStartDelay];
     [self.audioBGPlayer playAtTime: now + shortStartDelay + shortBGStartDelay];
@@ -309,6 +307,17 @@ static float backgroundVolume = 0.2;
     }
 }
 
+#pragma mark - AVAudioSessionInterruptionNotification
+-(void)audioSessionInterruptionNotification:(NSNotification *)notification{
+    AVAudioSessionInterruptionType type = [notification.userInfo[AVAudioSessionInterruptionTypeKey] intValue];
+    if (type == AVAudioSessionInterruptionTypeBegan) {
+        NSLog(@"Interruption Began");
+        [self stopRecord];
+        [self stopPlay];
+    }else{
+        NSLog(@"Interruption end");
+    }
+}
 
 #pragma mark - help
 -(void)print_wav_head_info{
@@ -377,4 +386,12 @@ static float backgroundVolume = 0.2;
         }
     return isPhoneX;
 }
+
+
+#pragma mark -
+-(void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
 @end

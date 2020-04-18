@@ -34,6 +34,8 @@
     [self addButtonWith:@"停止播放" frame:CGRectMake(80, 260, 100, 50) action:@selector(stopPlayBtnAction)];
     [self addButtonWith:@"暂停播放" frame:CGRectMake(200, 260, 100, 50) action:@selector(pausePlayBtnAction)];
     [self addButtonWith:@"继续播放" frame:CGRectMake(200, 330, 100, 50) action:@selector(resumePlayBtnAction)];
+    
+    [self addButtonWith:@"释放录音器" frame:CGRectMake(80, 540, 100, 50) action:@selector(releaseRecorder)];
 
 }
 
@@ -64,6 +66,9 @@
 
 -(void)resumePlayBtnAction{
     [self.recorder resumePlay];
+}
+-(void)releaseRecorder{
+    self.recorder = nil;
 }
 
 #pragma mark -

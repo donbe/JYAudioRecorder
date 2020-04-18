@@ -7,14 +7,42 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AudioToolbox/AudioToolbox.h>
+#import <AVFoundation/AVFoundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@protocol JYAudioRecorderDelegate <NSObject>
+
+@optional
+
+
+/// 录制时，麦克风输出回调
+/// @param buffer  缓存
+/// @param when  时间
+-(void)recorderBuffer:(AVAudioPCMBuffer * _Nonnull) buffer when:(AVAudioTime * _Nonnull) when;
+
+
+/// 播放时，时间回调
+/// @param time 正在播放的时间点
+-(void)recorderPlayingTime:(NSTimeInterval * _Nonnull) time;
+
+
+/// 状态变更时触发
+/// @param isRec  录制状态
+/// @param isPlaying  播放状态
+-(void)recorderIsRec:(BOOL)isRec isPlaying:(BOOL)isPlaying;
+
+
+@end
 
 @interface JYAudioRecorder : NSObject
 
 @property(nonatomic,strong)NSString *fileBGPath; //背景音地址
 @property(atomic)BOOL isRec; //录制状态
 @property(atomic)BOOL isPlaying; //播放状态
+
+@property(atomic,strong)id<JYAudioRecorderDelegate> delegate;
 
 // 重头开始录音
 -(void)startRecord;
