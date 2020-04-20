@@ -74,7 +74,7 @@
     // 创建播放文件
     AVAudioFile *audiofile;
     if (self.fileBGPath) {
-        audiofile = [[AVAudioFile alloc] initForReading:[NSURL URLWithString:self.fileBGPath] error:&error];
+        audiofile = [[AVAudioFile alloc] initForReading:[NSURL fileURLWithPath:self.fileBGPath] error:&error];
         assert(error == nil);
         
         // 连接背景音乐node
@@ -100,14 +100,14 @@
         char buf[truncateByte];
         UInt32 pos = truncateByte;
         if (truncateByte>0) {
-            OSStatus stats = AudioFileOpenURL((__bridge CFURLRef)[NSURL URLWithString:self.recordFilePath], kAudioFileReadPermission, kAudioFileWAVEType, &_recordFileID);
+            OSStatus stats = AudioFileOpenURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileReadPermission, kAudioFileWAVEType, &_recordFileID);
             assert(stats==0);
             AudioFileReadBytes(_recordFileID, NO, 0, &pos, buf);
             AudioFileClose(_recordFileID);
         }
         
         // 重新创建文件
-        OSStatus stats = AudioFileCreateWithURL((__bridge CFURLRef)[NSURL URLWithString:self.recordFilePath], kAudioFileWAVEType, formatOut.streamDescription, kAudioFileFlags_EraseFile, &_recordFileID);
+        OSStatus stats = AudioFileCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileWAVEType, formatOut.streamDescription, kAudioFileFlags_EraseFile, &_recordFileID);
         assert(stats==0);
         
         // 重新写入需要保留的部分
@@ -229,12 +229,12 @@
     assert(error == nil);
     
     
-    self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:self.recordFilePath] error:&error];
+    self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.recordFilePath] error:&error];
     assert(error == nil);
     
     self.audioBGPlayer = nil;
     if (self.fileBGPath) {
-        self.audioBGPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:self.fileBGPath] error:&error];
+        self.audioBGPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.fileBGPath] error:&error];
         assert(error == nil);
     }
     
