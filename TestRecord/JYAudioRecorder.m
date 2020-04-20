@@ -9,7 +9,6 @@
 #import "JYAudioRecorder.h"
 #import <UIKit/UIKit.h>
 
-static float backgroundVolume = 0.2;
 
 @interface JYAudioRecorder()<AVAudioPlayerDelegate>
 
@@ -25,13 +24,18 @@ static float backgroundVolume = 0.2;
 @property(nonatomic,strong)NSString *recordFilePath;
 @property(nonatomic)AudioFileID recordFileID;
 
+@property(nonatomic,weak)NSTimer *playTimer;
+
 @end
+
 
 @implementation JYAudioRecorder
 
 -(instancetype)init{
     self = [super init];
     if (self) {
+        
+        self.backgroundVolume = 0.2;
         
         self.audioEngine = [AVAudioEngine new];
         self.audioPlayerNode = [AVAudioPlayerNode new];
@@ -88,7 +92,7 @@ static float backgroundVolume = 0.2;
     
     
     // 继续录音的情况，计算从多少byte开始截断
-    UInt32 truncateByte = (UInt32)(time * formatOut.sampleRate * formatOut.channelCount * [self calculatorCommonFormatBytes:formatOut.commonFormat]);
+    UInt32 truncateByte = (UInt32)(time * formatOut.sampleRate * formatOut.channelCount * [self bytesOfCommonFormat:formatOut.commonFormat]);
     
     
     // 打开文件，处理截断
@@ -138,7 +142,7 @@ static float backgroundVolume = 0.2;
         
 
         // 写文件
-        UInt32 length = convertedBuffer.frameLength * formatOut.channelCount * [weakSelf calculatorCommonFormatBytes:formatOut.commonFormat];
+        UInt32 length = convertedBuffer.frameLength * formatOut.channelCount * [weakSelf bytesOfCommonFormat:formatOut.commonFormat];
         OSStatus status = AudioFileWriteBytes(weakSelf.recordFileID, NO, inStartingByte, &length, convertedBuffer.int16ChannelData[0]);
         assert(status == noErr);
         if (status != noErr)
@@ -147,7 +151,7 @@ static float backgroundVolume = 0.2;
         
         inStartingByte += length;
         
-        NSTimeInterval duration = inStartingByte / formatOut.sampleRate / formatOut.channelCount / [weakSelf calculatorCommonFormatBytes:formatOut.commonFormat];
+        NSTimeInterval duration = inStartingByte / formatOut.sampleRate / formatOut.channelCount / [weakSelf bytesOfCommonFormat:formatOut.commonFormat];
         if ([self.delegate respondsToSelector:@selector(recorderBuffer:duration:)]) {
             [self.delegate recorderBuffer:convertedBuffer duration:duration];
         }
@@ -174,7 +178,7 @@ static float backgroundVolume = 0.2;
     
     // 开始播放
     if (audiofile) {
-        self.audioPlayerNode.volume = backgroundVolume;
+        self.audioPlayerNode.volume = self.backgroundVolume;
         [self.audioPlayerNode play];
     }
 }
@@ -198,6 +202,7 @@ static float backgroundVolume = 0.2;
 
 
 #pragma  mark -
+
 
 -(void)play{
     
@@ -236,7 +241,7 @@ static float backgroundVolume = 0.2;
     self.audioPlayer.delegate = self;
     self.audioBGPlayer.delegate = self;
     
-    self.audioBGPlayer.volume = backgroundVolume;
+    self.audioBGPlayer.volume = self.backgroundVolume;
 
     
     // 同步两个播放器，背景音乐需要再延后一点，老机型相对延迟会更大一些
@@ -246,13 +251,15 @@ static float backgroundVolume = 0.2;
     
     [self.audioPlayer playAtTime: now + shortStartDelay];
     [self.audioBGPlayer playAtTime: now + shortStartDelay + shortBGStartDelay];
+    
+    [self startTimer];
 }
 
 -(void)pausePlay{
     
     [self.audioPlayer stop];
     [self.audioBGPlayer stop];
-    
+    [self stopTimer];
 }
 
 -(void)resumePlay{
@@ -260,17 +267,21 @@ static float backgroundVolume = 0.2;
     [self.audioPlayer prepareToPlay];
     [self.audioBGPlayer prepareToPlay];
     
-   [self.audioPlayer play];
-   [self.audioBGPlayer play];
+    [self.audioPlayer play];
+    [self.audioBGPlayer play];
     
+    [self startTimer];
 }
 
 -(void)stopPlay{
     if (self.isPlaying) {
         
-        [[AVAudioSession sharedInstance] setActive:NO error:nil];
         [self.audioPlayer stop];
         [self.audioBGPlayer stop];
+        
+        [[AVAudioSession sharedInstance] setActive:NO error:nil];
+        
+        [self stopTimer];
         
         self.isPlaying = NO;
     
@@ -300,20 +311,14 @@ static float backgroundVolume = 0.2;
 -(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
     NSLog(@"audioPlayerDidFinishPlaying");
     if (player == self.audioPlayer) {
-        [self.audioBGPlayer stop];
-        
-        self.isPlaying = NO;
-        
+        [self stopPlay];
     }
 }
 
 -(void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error{
     NSLog(@"audioPlayerDecodeErrorDidOccur");
     if (player == self.audioPlayer) {
-        [self.audioBGPlayer stop];
-        
-        self.isPlaying = NO;
-        
+        [self stopPlay];
     }
 }
 
@@ -326,6 +331,22 @@ static float backgroundVolume = 0.2;
         [self stopPlay];
     }else{
         NSLog(@"Interruption end");
+    }
+}
+
+#pragma mark - NStimer
+- (NSTimer * _Nonnull)startTimer {
+    return self.playTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(playTimerCB) userInfo:nil repeats:YES];
+}
+
+- (void)stopTimer {
+    [self.playTimer invalidate];
+    self.playTimer = nil;
+}
+
+-(void)playTimerCB{
+    if ([self.delegate respondsToSelector:@selector(recorderPlayingTime:duration:)]) {
+        [self.delegate recorderPlayingTime:self.audioPlayer.currentTime duration:self.audioPlayer.duration];
     }
 }
 
@@ -386,7 +407,6 @@ static float backgroundVolume = 0.2;
     bsi = (int *)bs;
     printf("\r");
     printf("data chunk size: %d",bsi[0]);
-    
 }
 
 -(BOOL)isIphoneX{
@@ -397,7 +417,7 @@ static float backgroundVolume = 0.2;
     return isPhoneX;
 }
 
--(unsigned int)calculatorCommonFormatBytes:(AVAudioCommonFormat)format{
+-(unsigned int)bytesOfCommonFormat:(AVAudioCommonFormat)format{
     switch (format) {
         case AVAudioPCMFormatInt16:
             return 2;
@@ -408,6 +428,7 @@ static float backgroundVolume = 0.2;
         case AVAudioPCMFormatFloat64:
             return 8;
         default:
+            assert(0);
             return 2;
     }
 }
@@ -415,8 +436,8 @@ static float backgroundVolume = 0.2;
 #pragma mark -
 -(void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    NSLog(@"recorder dealloc");
 }
-
 
 
 @end

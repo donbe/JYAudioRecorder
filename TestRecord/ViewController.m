@@ -98,13 +98,11 @@
 }
 
 -(void)recorderBuffer:(AVAudioPCMBuffer *)buffer duration:(NSTimeInterval)duration{
-    
     NSLog(@"%f", duration);
-    
-    
 }
 
--(void)recorderPlayingTime:(NSTimeInterval)time{
-    NSLog(@"play time: %f",time);
+-(void)recorderPlayingTime:(NSTimeInterval)time duration:(NSTimeInterval)duration{
+    NSLog(@"play time: %f / %f",time,duration);
 }
+
 @end

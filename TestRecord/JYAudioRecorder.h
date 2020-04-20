@@ -20,12 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 录制时，麦克风输出回调
 /// @param buffer  缓存
 /// @param duration  录制的时长
--(void)recorderBuffer:(AVAudioPCMBuffer * _Nonnull) buffer duration:(NSTimeInterval) duration;
-
-
-/// 播放时，时间回调
-/// @param time 正在播放的时间点
--(void)recorderPlayingTime:(NSTimeInterval) time;
+-(void)recorderBuffer:(AVAudioPCMBuffer * _Nonnull)buffer duration:(NSTimeInterval)duration;
 
 
 /// 状态变更时触发
@@ -34,11 +29,20 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)recorderIsRec:(BOOL)isRec isPlaying:(BOOL)isPlaying;
 
 
+/// 播放时，时间回调
+/// @param time 正在播放的时间点
+/// @param duration 总时间
+-(void)recorderPlayingTime:(NSTimeInterval)time duration:(NSTimeInterval)duration;
+
+
 @end
+
 
 @interface JYAudioRecorder : NSObject
 
 @property(nonatomic,strong)NSString *fileBGPath; //背景音地址
+@property(nonatomic)float backgroundVolume; //背景音音量，默认0.2
+
 @property(nonatomic)BOOL isRec; //录制状态
 @property(nonatomic)BOOL isPlaying; //播放状态
 
