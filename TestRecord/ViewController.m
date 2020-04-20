@@ -10,7 +10,7 @@
 #import "JYAudioRecorder.h"
 #import <AVFoundation/AVFoundation.h>
 
-@interface ViewController ()
+@interface ViewController ()<JYAudioRecorderDelegate>
 @property(nonatomic,strong)JYAudioRecorder *recorder;
 @end
 
@@ -75,6 +75,7 @@
 -(JYAudioRecorder *)recorder{
     if (_recorder == nil) {
         _recorder = [JYAudioRecorder new];
+        _recorder.delegate = self;
     }
     return _recorder;
 }
@@ -91,4 +92,19 @@
     [self.view addSubview:record];
 }
 
+#pragma mark -
+-(void)recorderIsRec:(BOOL)isRec isPlaying:(BOOL)isPlaying{
+    NSLog(@"isRec:%d isPlaying:%d",isRec,isPlaying);
+}
+
+-(void)recorderBuffer:(AVAudioPCMBuffer *)buffer duration:(NSTimeInterval)duration{
+    
+    NSLog(@"%f", duration);
+    
+    
+}
+
+-(void)recorderPlayingTime:(NSTimeInterval)time{
+    NSLog(@"play time: %f",time);
+}
 @end

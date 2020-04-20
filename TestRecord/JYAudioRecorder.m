@@ -57,7 +57,6 @@ static float backgroundVolume = 0.2;
         return;
     }
     self.isRec = YES;
-    NSLog(@"begin record");
     
     
     // 设置AVAudioSession
@@ -89,24 +88,7 @@ static float backgroundVolume = 0.2;
     
     
     // 继续录音的情况，计算从多少byte开始截断
-    UInt32 truncateByte = 0;
-    switch (formatOut.commonFormat) {
-        case AVAudioPCMFormatInt16:
-            truncateByte = (UInt32)(time * formatOut.sampleRate * formatOut.channelCount * 2);
-            break;
-        case AVAudioPCMFormatInt32:
-            truncateByte = (UInt32)(time * formatOut.sampleRate * formatOut.channelCount * 4);
-            break;
-        case AVAudioPCMFormatFloat32:
-            truncateByte = (UInt32)(time * formatOut.sampleRate * formatOut.channelCount * 5);
-            break;
-        case AVAudioPCMFormatFloat64:
-            truncateByte = (UInt32)(time * formatOut.sampleRate * formatOut.channelCount * 8);
-            break;
-        default:
-            assert(0);
-            break;
-    }
+    UInt32 truncateByte = (UInt32)(time * formatOut.sampleRate * formatOut.channelCount * [self calculatorCommonFormatBytes:formatOut.commonFormat]);
     
     
     // 打开文件，处理截断
@@ -156,13 +138,19 @@ static float backgroundVolume = 0.2;
         
 
         // 写文件
-        UInt32 length = convertedBuffer.frameLength * 2;
+        UInt32 length = convertedBuffer.frameLength * formatOut.channelCount * [weakSelf calculatorCommonFormatBytes:formatOut.commonFormat];
         OSStatus status = AudioFileWriteBytes(weakSelf.recordFileID, NO, inStartingByte, &length, convertedBuffer.int16ChannelData[0]);
         assert(status == noErr);
+        if (status != noErr)
+            return;
+        
+        
         inStartingByte += length;
         
-        
-        NSLog(@"%lld", inStartingByte / 2);
+        NSTimeInterval duration = inStartingByte / formatOut.sampleRate / formatOut.channelCount / [weakSelf calculatorCommonFormatBytes:formatOut.commonFormat];
+        if ([self.delegate respondsToSelector:@selector(recorderBuffer:duration:)]) {
+            [self.delegate recorderBuffer:convertedBuffer duration:duration];
+        }
         
     }];
     
@@ -205,7 +193,6 @@ static float backgroundVolume = 0.2;
         [[AVAudioSession sharedInstance] setActive:NO error:nil];
         
         self.isRec = NO;
-        NSLog(@"stoped record");
     }
 }
 
@@ -226,6 +213,7 @@ static float backgroundVolume = 0.2;
     }
     
     self.isPlaying = YES;
+    
     NSLog(@"begin play");
 
     NSError *error;
@@ -285,17 +273,37 @@ static float backgroundVolume = 0.2;
         [self.audioBGPlayer stop];
         
         self.isPlaying = NO;
-        NSLog(@"stoped play");
+    
     }
 }
 
+#pragma mark - get/set
+-(void)setIsRec:(BOOL)isRec{
+    if (isRec != _isRec) {
+        _isRec = isRec;
+        if ([self.delegate respondsToSelector:@selector(recorderIsRec:isPlaying:)]) {
+            [self.delegate recorderIsRec:self.isRec isPlaying:self.isPlaying];
+        }
+    }
+}
+
+-(void)setIsPlaying:(BOOL)isPlaying{
+    if (_isPlaying != isPlaying) {
+        _isPlaying = isPlaying;
+        if ([self.delegate respondsToSelector:@selector(recorderIsRec:isPlaying:)]) {
+            [self.delegate recorderIsRec:self.isRec isPlaying:self.isPlaying];
+        }
+    }
+}
 
 #pragma mark - AVAudioPlayerDelegate
 -(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
     NSLog(@"audioPlayerDidFinishPlaying");
     if (player == self.audioPlayer) {
         [self.audioBGPlayer stop];
+        
         self.isPlaying = NO;
+        
     }
 }
 
@@ -303,7 +311,9 @@ static float backgroundVolume = 0.2;
     NSLog(@"audioPlayerDecodeErrorDidOccur");
     if (player == self.audioPlayer) {
         [self.audioBGPlayer stop];
+        
         self.isPlaying = NO;
+        
     }
 }
 
@@ -387,11 +397,26 @@ static float backgroundVolume = 0.2;
     return isPhoneX;
 }
 
+-(unsigned int)calculatorCommonFormatBytes:(AVAudioCommonFormat)format{
+    switch (format) {
+        case AVAudioPCMFormatInt16:
+            return 2;
+        case AVAudioPCMFormatInt32:
+            return 4;
+        case AVAudioPCMFormatFloat32:
+            return 4;
+        case AVAudioPCMFormatFloat64:
+            return 8;
+        default:
+            return 2;
+    }
+}
 
 #pragma mark -
 -(void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
 
 
 @end
