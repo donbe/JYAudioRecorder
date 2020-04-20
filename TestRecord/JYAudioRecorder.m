@@ -152,8 +152,10 @@
         inStartingByte += length;
         
         NSTimeInterval duration = inStartingByte / formatOut.sampleRate / formatOut.channelCount / [weakSelf bytesOfCommonFormat:formatOut.commonFormat];
-        if ([self.delegate respondsToSelector:@selector(recorderBuffer:duration:)]) {
-            [self.delegate recorderBuffer:convertedBuffer duration:duration];
+        if ([weakSelf.delegate respondsToSelector:@selector(recorderBuffer:duration:)]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf.delegate recorderBuffer:convertedBuffer duration:duration];
+            });
         }
         
     }];
