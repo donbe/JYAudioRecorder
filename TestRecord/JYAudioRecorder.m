@@ -318,13 +318,13 @@
         _isPlaying = isPlaying;
         
         if (isPlaying) {
+            [self startTimer];
             if ([self.delegate respondsToSelector:@selector(recorderPlayingStart)]) {
-                [self startTimer];
                 [self.delegate recorderPlayingStart];
             }
         }else{
+            [self stopTimer];
             if ([self.delegate respondsToSelector:@selector(recorderPlayingFinish)]) {
-                [self stopTimer];
                 [self.delegate recorderPlayingFinish];
             }
         }
