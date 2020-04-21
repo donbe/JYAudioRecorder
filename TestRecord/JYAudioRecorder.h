@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(atomic,weak)id<JYAudioRecorderDelegate> delegate;
 
-// 重头开始录音
+// 从头开始录音
 -(void)startRecord;
 
 // 从某个时间点往后录音
