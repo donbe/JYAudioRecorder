@@ -52,10 +52,10 @@
 
 #pragma mark -
 -(void)startRecord{
-    [self startRecordFromTime:0];
+    [self startRecordAtTime:0];
 }
 
--(void)startRecordFromTime:(NSTimeInterval)time{
+-(void)startRecordAtTime:(NSTimeInterval)time{
     
     if (self.isRec || self.isPlaying) {
         return;
@@ -204,9 +204,11 @@
 
 
 #pragma  mark -
-
-
 -(void)play{
+    [self playAtTime:0];
+}
+
+-(void)playAtTime:(NSTimeInterval)time{
     
 //    [self print_wav_head_info];
 //    return;
@@ -239,6 +241,9 @@
         self.audioBGPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.fileBGPath] error:&error];
         assert(error == nil);
     }
+    
+    self.audioPlayer.currentTime = time;
+    self.audioBGPlayer.currentTime = time;
     
     self.audioPlayer.delegate = self;
     self.audioBGPlayer.delegate = self;

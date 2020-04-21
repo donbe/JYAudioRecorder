@@ -65,7 +65,8 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
     [self addButtonWith:@"播放录音" frame:CGRectMake(200, 190, 100, 50) action:@selector(playBtnAction)];
     [self addButtonWith:@"停止播放" frame:CGRectMake(80, 260, 100, 50) action:@selector(stopPlayBtnAction)];
     [self addButtonWith:@"暂停播放" frame:CGRectMake(200, 260, 100, 50) action:@selector(pausePlayBtnAction)];
-    [self addButtonWith:@"继续播放" frame:CGRectMake(200, 330, 100, 50) action:@selector(resumePlayBtnAction)];
+    [self addButtonWith:@"继续播放" frame:CGRectMake(80, 330, 100, 50) action:@selector(resumePlayBtnAction)];
+    [self addButtonWith:@"2秒开播" frame:CGRectMake(200, 330, 100, 50) action:@selector(playattime)];
     
     [self addButtonWith:@"释放录音器" frame:CGRectMake(80, 540, 100, 50) action:@selector(releaseRecorder)];
 
@@ -85,7 +86,7 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
 }
 
 -(void)recordFromTimeBtnAction{
-    [self.recorder startRecordFromTime:1];
+    [self.recorder startRecordAtTime:1];
 }
 
 -(void)playBtnAction{
@@ -105,6 +106,10 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
 }
 -(void)releaseRecorder{
     self.recorder = nil;
+}
+
+-(void)playattime{
+    [self.recorder playAtTime:2];
 }
 
 #pragma mark -
