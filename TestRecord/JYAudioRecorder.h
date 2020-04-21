@@ -73,6 +73,10 @@ NS_ASSUME_NONNULL_BEGIN
 // 继续播放
 -(void)resumePlay;
 
+#pragma mark -
+// 给背景音加的延迟秒数
++(NSTimeInterval)bgLatency;
+
 @end
 
 NS_ASSUME_NONNULL_END

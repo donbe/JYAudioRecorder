@@ -253,7 +253,7 @@
     
     // 同步两个播放器，背景音乐需要再延后一点，老机型相对延迟会更大一些
     NSTimeInterval shortStartDelay = 0.01;
-    NSTimeInterval shortBGStartDelay = [self isIphoneX] ? 0.17 : 0.20;
+    NSTimeInterval shortBGStartDelay = [JYAudioRecorder bgLatency];
     NSTimeInterval now = self.audioPlayer.deviceCurrentTime;
     
     [self.audioPlayer playAtTime: now + shortStartDelay];
@@ -416,7 +416,7 @@
     printf("data chunk size: %d",bsi[0]);
 }
 
--(BOOL)isIphoneX{
++(BOOL)isIphoneX{
     BOOL isPhoneX = NO;
          if (@available(iOS 11.0, *)) {
              isPhoneX = [[UIApplication sharedApplication].windows firstObject].safeAreaInsets.bottom > 0.0;
@@ -446,5 +446,8 @@
     NSLog(@"recorder dealloc");
 }
 
-
+#pragma mark -
++(NSTimeInterval)bgLatency{
+    return [self isIphoneX] ? 0.17 : 0.20;
+}
 @end
