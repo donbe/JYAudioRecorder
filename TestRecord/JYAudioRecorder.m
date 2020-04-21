@@ -281,7 +281,6 @@
     [self.audioPlayer play];
     [self.audioBGPlayer play];
     
-    
 }
 
 -(void)stopPlay{
