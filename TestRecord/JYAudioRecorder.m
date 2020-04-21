@@ -65,7 +65,9 @@
     
     // 设置AVAudioSession
     NSError *error;
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord mode:AVAudioSessionModeSpokenAudio options:AVAudioSessionCategoryOptionDefaultToSpeaker error:&error];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker error:&error];
+    assert(error == nil);
+    [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeSpokenAudio error:&error];
     assert(error == nil);
     [[AVAudioSession sharedInstance] setActive:YES error:&error];
     assert(error == nil);
