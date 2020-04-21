@@ -215,7 +215,7 @@
 //    [self print_wav_head_info];
 //    return;
      
-    if (self.isPlaying || self.isRec) {
+    if (self.isRec) {
         return;
     }
 
@@ -223,52 +223,54 @@
         return;
     }
     
-    self.isPlaying = YES;
     
-    NSLog(@"begin play");
-
-    NSError *error;
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
-    assert(error == nil);
-
-    [[AVAudioSession sharedInstance] setActive:YES error:&error];
-    assert(error == nil);
-    
-    
-    self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.recordFilePath] error:&error];
-    assert(error == nil);
-    
-    self.audioBGPlayer = nil;
-    if (self.fileBGPath) {
-        self.audioBGPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.fileBGPath] error:&error];
+    if (!self.isPlaying) {
+        NSError *error;
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
         assert(error == nil);
+
+        [[AVAudioSession sharedInstance] setActive:YES error:&error];
+        assert(error == nil);
+        
+        
+        self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.recordFilePath] error:&error];
+        assert(error == nil);
+        
+        self.audioBGPlayer = nil;
+        if (self.fileBGPath) {
+            self.audioBGPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.fileBGPath] error:&error];
+            assert(error == nil);
+        }
+        
+        self.audioPlayer.delegate = self;
+        self.audioBGPlayer.delegate = self;
+        
+        self.audioBGPlayer.volume = self.backgroundVolume;
     }
     
+
     self.audioPlayer.currentTime = time;
     self.audioBGPlayer.currentTime = time;
     
-    self.audioPlayer.delegate = self;
-    self.audioBGPlayer.delegate = self;
+    if (!self.audioPlayer.isPlaying) {
+        // 同步两个播放器
+        NSTimeInterval shortStartDelay = 0.01;
+        NSTimeInterval shortBGStartDelay = [JYAudioRecorder bgLatency];
+        NSTimeInterval now = self.audioPlayer.deviceCurrentTime;
+        
+        [self.audioPlayer playAtTime: now + shortStartDelay];
+        [self.audioBGPlayer playAtTime: now + shortStartDelay + shortBGStartDelay];
+        
+    }
     
-    self.audioBGPlayer.volume = self.backgroundVolume;
-
-    
-    // 同步两个播放器，背景音乐需要再延后一点，老机型相对延迟会更大一些
-    NSTimeInterval shortStartDelay = 0.01;
-    NSTimeInterval shortBGStartDelay = [JYAudioRecorder bgLatency];
-    NSTimeInterval now = self.audioPlayer.deviceCurrentTime;
-    
-    [self.audioPlayer playAtTime: now + shortStartDelay];
-    [self.audioBGPlayer playAtTime: now + shortStartDelay + shortBGStartDelay];
-    
-    [self startTimer];
+    self.isPlaying = YES;
 }
 
 -(void)pausePlay{
     
     [self.audioPlayer stop];
     [self.audioBGPlayer stop];
-    [self stopTimer];
+
 }
 
 -(void)resumePlay{
@@ -279,7 +281,7 @@
     [self.audioPlayer play];
     [self.audioBGPlayer play];
     
-    [self startTimer];
+    
 }
 
 -(void)stopPlay{
@@ -290,10 +292,7 @@
         
         [[AVAudioSession sharedInstance] setActive:NO error:nil];
         
-        [self stopTimer];
-        
         self.isPlaying = NO;
-    
     }
 }
 
@@ -320,10 +319,12 @@
         
         if (isPlaying) {
             if ([self.delegate respondsToSelector:@selector(recorderPlayingStart)]) {
+                [self startTimer];
                 [self.delegate recorderPlayingStart];
             }
         }else{
             if ([self.delegate respondsToSelector:@selector(recorderPlayingFinish)]) {
+                [self stopTimer];
                 [self.delegate recorderPlayingFinish];
             }
         }
@@ -359,7 +360,7 @@
 }
 
 #pragma mark - NStimer
-- (NSTimer * _Nonnull)startTimer {
+- (NSTimer * _Nonnull)startTimer{
     return self.playTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(playTimerCB) userInfo:nil repeats:YES];
 }
 
