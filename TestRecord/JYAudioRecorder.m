@@ -26,6 +26,10 @@
 
 @property(nonatomic,weak)NSTimer *playTimer;
 
+@property(nonatomic,readwrite)NSTimeInterval recordDuration; //录制时长
+@property(nonatomic,readwrite)BOOL isRec; //录制状态
+@property(nonatomic,readwrite)BOOL isPlaying; //播放状态
+
 @end
 
 
@@ -153,10 +157,10 @@
         
         inStartingByte += length;
         
-        NSTimeInterval duration = inStartingByte / formatOut.sampleRate / formatOut.channelCount / [weakSelf bytesOfCommonFormat:formatOut.commonFormat];
+        weakSelf.recordDuration = inStartingByte / formatOut.sampleRate / formatOut.channelCount / [weakSelf bytesOfCommonFormat:formatOut.commonFormat];
         if ([weakSelf.delegate respondsToSelector:@selector(recorderBuffer:duration:)]) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf.delegate recorderBuffer:convertedBuffer duration:duration];
+                [weakSelf.delegate recorderBuffer:convertedBuffer duration:weakSelf.recordDuration];
             });
         }
         
@@ -267,20 +271,20 @@
 }
 
 -(void)pausePlay{
-    
-    [self.audioPlayer stop];
-    [self.audioBGPlayer stop];
-
+    if (self.isPlaying) {
+        [self.audioPlayer stop];
+        [self.audioBGPlayer stop];
+    }
 }
 
 -(void)resumePlay{
-   
-    [self.audioPlayer prepareToPlay];
-    [self.audioBGPlayer prepareToPlay];
-    
-    [self.audioPlayer play];
-    [self.audioBGPlayer play];
-    
+    if (self.isPlaying) {
+        [self.audioPlayer prepareToPlay];
+        [self.audioBGPlayer prepareToPlay];
+        
+        [self.audioPlayer play];
+        [self.audioBGPlayer play];
+    }
 }
 
 -(void)stopPlay{
@@ -329,6 +333,10 @@
         }
         
     }
+}
+
+-(NSTimeInterval)currentPlayTime{
+    return self.audioPlayer.currentTime;
 }
 
 #pragma mark - AVAudioPlayerDelegate

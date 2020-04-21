@@ -48,8 +48,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,strong)NSString *fileBGPath; //背景音地址
 @property(nonatomic)float backgroundVolume; //背景音音量，默认0.2
 
-@property(nonatomic)BOOL isRec; //录制状态
-@property(nonatomic)BOOL isPlaying; //播放状态
+@property(nonatomic,readonly)BOOL isRec; //录制状态
+@property(nonatomic,readonly)BOOL isPlaying; //播放状态
+
+@property(nonatomic,readonly)NSTimeInterval recordDuration; //录制时长
+@property(nonatomic,readonly)NSTimeInterval currentPlayTime; //当前播放时间点
 
 @property(atomic,weak)id<JYAudioRecorderDelegate> delegate;
 
