@@ -22,17 +22,22 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param duration  录制的时长
 -(void)recorderBuffer:(AVAudioPCMBuffer * _Nonnull)buffer duration:(NSTimeInterval)duration;
 
-
-/// 状态变更时触发
-/// @param isRec  录制状态
-/// @param isPlaying  播放状态
--(void)recorderIsRec:(BOOL)isRec isPlaying:(BOOL)isPlaying;
-
-
 /// 播放时，时间回调
 /// @param time 正在播放的时间点
 /// @param duration 总时间
 -(void)recorderPlayingTime:(NSTimeInterval)time duration:(NSTimeInterval)duration;
+
+/// 播放开始
+-(void)recorderPlayingStart;
+
+/// 播放结束
+-(void)recorderPlayingFinish;
+
+/// 录制开始
+-(void)recorderStart;
+
+/// 录制结束
+-(void)recorderFinish;
 
 
 @end

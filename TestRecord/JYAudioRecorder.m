@@ -301,8 +301,15 @@
 -(void)setIsRec:(BOOL)isRec{
     if (isRec != _isRec) {
         _isRec = isRec;
-        if ([self.delegate respondsToSelector:@selector(recorderIsRec:isPlaying:)]) {
-            [self.delegate recorderIsRec:self.isRec isPlaying:self.isPlaying];
+        
+        if (isRec) {
+            if ([self.delegate respondsToSelector:@selector(recorderStart)]) {
+                [self.delegate recorderStart];
+            }
+        }else{
+            if ([self.delegate respondsToSelector:@selector(recorderFinish)]) {
+                [self.delegate recorderFinish];
+            }
         }
     }
 }
@@ -310,9 +317,17 @@
 -(void)setIsPlaying:(BOOL)isPlaying{
     if (_isPlaying != isPlaying) {
         _isPlaying = isPlaying;
-        if ([self.delegate respondsToSelector:@selector(recorderIsRec:isPlaying:)]) {
-            [self.delegate recorderIsRec:self.isRec isPlaying:self.isPlaying];
+        
+        if (isPlaying) {
+            if ([self.delegate respondsToSelector:@selector(recorderPlayingStart)]) {
+                [self.delegate recorderPlayingStart];
+            }
+        }else{
+            if ([self.delegate respondsToSelector:@selector(recorderPlayingFinish)]) {
+                [self.delegate recorderPlayingFinish];
+            }
         }
+        
     }
 }
 

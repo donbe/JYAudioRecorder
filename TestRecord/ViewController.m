@@ -134,8 +134,21 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
 }
 
 #pragma mark -
--(void)recorderIsRec:(BOOL)isRec isPlaying:(BOOL)isPlaying{
-    NSLog(@"isRec:%d isPlaying:%d",isRec,isPlaying);
+-(void)recorderStart{
+
+    NSLog(@"开始录制");
+}
+
+-(void)recorderFinish{
+    NSLog(@"结束录制");
+}
+
+-(void)recorderPlayingStart{
+    NSLog(@"开始播放");
+}
+
+-(void)recorderPlayingFinish{
+    NSLog(@"结束播放");
 }
 
 -(void)recorderBuffer:(AVAudioPCMBuffer *)buffer duration:(NSTimeInterval)duration{
@@ -172,8 +185,6 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
     }
     return [array copy];
 }
-
-
 
 -(void)recorderPlayingTime:(NSTimeInterval)time duration:(NSTimeInterval)duration{
     NSLog(@"play time: %f / %f",time,duration);
