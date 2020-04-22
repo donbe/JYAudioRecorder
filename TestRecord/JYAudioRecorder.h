@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface JYAudioRecorder : NSObject
 
+@property(nonatomic,strong,readonly)NSString *recordFilePath; //录制的音频保存地址
 @property(nonatomic,strong)NSString *fileBGPath; //背景音地址
 @property(nonatomic)float backgroundVolume; //背景音音量，默认0.2
 

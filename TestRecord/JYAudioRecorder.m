@@ -21,7 +21,7 @@
 
 @property(nonatomic) NSTimeInterval pausePoint;
 
-@property(nonatomic,strong)NSString *recordFilePath;
+@property(nonatomic,strong,readwrite)NSString *recordFilePath; //录制的音频保存地址
 @property(nonatomic)AudioFileID recordFileID;
 
 @property(nonatomic,weak)NSTimer *playTimer;
@@ -29,6 +29,7 @@
 @property(nonatomic,readwrite)NSTimeInterval recordDuration; //录制时长
 @property(nonatomic,readwrite)BOOL isRec; //录制状态
 @property(nonatomic,readwrite)BOOL isPlaying; //播放状态
+
 
 @end
 
@@ -87,12 +88,7 @@
         [self.audioEngine connect:self.audioPlayerNode to:self.audioEngine.mainMixerNode format:audiofile.processingFormat];
     }
     
-    
-    // 存储文件路径
-    NSString *dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-    self.recordFilePath =  [dir stringByAppendingString:@"/temp2.wav"];
 
-    
     // 存储的文件格式
     AVAudioFormat *formatOut = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:16000 channels:1 interleaved:true];
     
@@ -337,6 +333,15 @@
 
 -(NSTimeInterval)currentPlayTime{
     return self.audioPlayer.currentTime;
+}
+
+-(NSString *)recordFilePath{
+    if (_recordFilePath == nil) {
+        // 存储文件路径
+        NSString *dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+        _recordFilePath = [dir stringByAppendingString:@"/recording_file_200422.wav"];
+    }
+    return _recordFilePath;
 }
 
 #pragma mark - AVAudioPlayerDelegate
