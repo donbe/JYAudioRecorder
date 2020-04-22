@@ -42,10 +42,6 @@
         
         self.backgroundVolume = 0.2;
         
-        self.audioEngine = [AVAudioEngine new];
-        self.audioPlayerNode = [AVAudioPlayerNode new];
-        self.audioMixerNode = [AVAudioMixerNode new];
-        
         [self.audioEngine attachNode:self.audioPlayerNode];
         [self.audioEngine attachNode:self.audioMixerNode];
         
@@ -168,7 +164,7 @@
     
     // 播放设置
     if (audiofile) {
-        [self.audioPlayerNode scheduleSegment:audiofile startingFrame:0 frameCount:(AVAudioFrameCount)[audiofile length] atTime:nil completionHandler:^{
+        [self.audioPlayerNode scheduleSegment:audiofile startingFrame:time * audiofile.fileFormat.sampleRate frameCount:(AVAudioFrameCount)[audiofile length] atTime:nil completionHandler:^{
             NSLog(@"player complete");
         }];
         
@@ -346,6 +342,28 @@
     }
     return _recordFilePath;
 }
+
+-(AVAudioEngine *)audioEngine{
+    if (_audioEngine == nil) {
+        _audioEngine = [AVAudioEngine new];
+    }
+    return _audioEngine;
+}
+
+-(AVAudioPlayerNode *)audioPlayerNode{
+    if (_audioPlayerNode == nil) {
+        _audioPlayerNode = [AVAudioPlayerNode new];
+    }
+    return _audioPlayerNode;
+}
+
+-(AVAudioMixerNode *)audioMixerNode{
+    if (_audioMixerNode == nil) {
+        _audioMixerNode = [AVAudioMixerNode new];
+    }
+    return _audioMixerNode;
+}
+
 
 #pragma mark - AVAudioPlayerDelegate
 -(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
