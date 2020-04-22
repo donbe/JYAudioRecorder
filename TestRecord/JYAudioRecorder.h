@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 从头开始录音
 -(void)startRecord;
 
-// 从某个时间点往后录音
+// 从某个时间点往后继续录音
 -(void)startRecordAtTime:(NSTimeInterval)time;
 
 // 停止录音
@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 播放录音
 -(void)play;
 
-// 从中间开始播放录音
+// 从某个时间点往后继续播放
 -(void)playAtTime:(NSTimeInterval)time;
 
 // 停止播放录音
