@@ -151,8 +151,11 @@
             return;
         
         
+        // 总写入字节数
         inStartingByte += length;
         
+        
+        // 计算总录制时长，回调
         weakSelf.recordDuration = inStartingByte / formatOut.sampleRate / formatOut.channelCount / [weakSelf bytesOfCommonFormat:formatOut.commonFormat];
         if ([weakSelf.delegate respondsToSelector:@selector(recorderBuffer:duration:)]) {
             dispatch_async(dispatch_get_main_queue(), ^{
