@@ -65,7 +65,7 @@
     time = MIN(time, self.recordDuration);
     
     // 解决精度问题
-    time = round(time * 10000)/10000;
+    time = round(time * 1000)/1000;
     
     // 设置AVAudioSession
     NSError *error;
