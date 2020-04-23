@@ -56,14 +56,16 @@
 
 -(void)startRecordAtTime:(NSTimeInterval)time{
     
-    // 解决精度问题
-    time = round(time * 10000)/10000;
-    
     if (self.isRec || self.isPlaying) {
         return;
     }
     self.isRec = YES;
     
+    // 不能大于录制时间
+    time = MIN(time, self.recordDuration);
+    
+    // 解决精度问题
+    time = round(time * 10000)/10000;
     
     // 设置AVAudioSession
     NSError *error;
