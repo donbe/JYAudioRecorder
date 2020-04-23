@@ -56,6 +56,9 @@
 
 -(void)startRecordAtTime:(NSTimeInterval)time{
     
+    // 解决精度问题
+    time = round(time * 10000)/10000;
+    
     if (self.isRec || self.isPlaying) {
         return;
     }
