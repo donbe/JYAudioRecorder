@@ -185,8 +185,6 @@
         
         [self.audioEngine.inputNode removeTapOnBus:0];
         
-        [self.audioEngine detachNode:self.audioPlayerNode];
-        
         AudioFileClose(self.recordFileID);
         self.recordFileID = nil;
         
