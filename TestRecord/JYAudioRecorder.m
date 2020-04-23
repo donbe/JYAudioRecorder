@@ -254,12 +254,14 @@
     }
     
     self.isPlaying = YES;
+    [self startTimer];
 }
 
 -(void)pausePlay{
     if (self.isPlaying) {
         [self.audioPlayer stop];
         [self.audioBGPlayer stop];
+        [self stopTimer];
     }
 }
 
@@ -270,6 +272,7 @@
         
         [self.audioPlayer play];
         [self.audioBGPlayer play];
+        [self startTimer];
     }
 }
 
@@ -282,6 +285,7 @@
         [[AVAudioSession sharedInstance] setActive:NO error:nil];
         
         self.isPlaying = NO;
+        [self stopTimer];
     }
 }
 
@@ -307,12 +311,10 @@
         _isPlaying = isPlaying;
         
         if (isPlaying) {
-            [self startTimer];
             if ([self.delegate respondsToSelector:@selector(recorderPlayingStart)]) {
                 [self.delegate recorderPlayingStart];
             }
         }else{
-            [self stopTimer];
             if ([self.delegate respondsToSelector:@selector(recorderPlayingFinish)]) {
                 [self.delegate recorderPlayingFinish];
             }

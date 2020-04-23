@@ -158,7 +158,7 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
 }
 
 -(void)recorderBuffer:(AVAudioPCMBuffer *)buffer duration:(NSTimeInterval)duration{
-//    NSLog(@"%f", duration);
+    NSLog(@"recorderBuffer %f", duration);
     
     NSData *data  = [NSData dataWithBytes:buffer.int16ChannelData[0] length:buffer.frameLength];
     NSArray *dd = [ViewController pcmToAverageAmplitude:data];
