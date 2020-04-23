@@ -82,6 +82,9 @@ NS_ASSUME_NONNULL_BEGIN
 // 继续播放
 -(void)resumePlay;
 
+// 截断已录制的音频
+- (void)truncateFile:(NSTimeInterval)time;
+
 #pragma mark -
 // 给背景音加的延迟秒数
 +(NSTimeInterval)bgLatency;

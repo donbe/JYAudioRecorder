@@ -19,6 +19,7 @@
 
 @property(nonatomic) NSTimeInterval pausePoint;
 
+@property(nonatomic,strong)AVAudioFormat *recordFormat; //录音保存格式
 @property(nonatomic,strong,readwrite)NSString *recordFilePath; //录制的音频保存地址
 @property(nonatomic)AudioFileID recordFileID;
 
@@ -27,6 +28,7 @@
 @property(nonatomic,readwrite)NSTimeInterval recordDuration; //录制时长
 @property(nonatomic,readwrite)BOOL isRec; //录制状态
 @property(nonatomic,readwrite)BOOL isPlaying; //播放状态
+
 
 
 @end
@@ -89,20 +91,20 @@
     self.recordFilePath = [dir stringByAppendingString:@"/recording_file_200422.wav"];
     
     
-    // 存储的文件格式
-    AVAudioFormat *formatOut = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:16000 channels:1 interleaved:true];
-    
-    
     // 继续录音的情况，计算从多少byte开始截断
-    UInt32 truncateByte = (UInt32)(time * formatOut.sampleRate * formatOut.channelCount * [self bytesOfCommonFormat:formatOut.commonFormat]);
+    UInt32 truncateByte = (UInt32)(time * self.recordFormat.sampleRate * self.recordFormat.channelCount * [self bytesOfCommonFormat:self.recordFormat.commonFormat]);
     
     
     // 打开文件，处理截断
-    [self openfileWithFormat:formatOut truncateByte:truncateByte];
-        
+    [self openfileWithFormat:self.recordFormat truncateByte:truncateByte];
+    
+    
+    // 重新设置录制时间
+    self.recordDuration = time;
+    
     
     // 创建格式转换器
-    AVAudioConverter *audioConverter = [[AVAudioConverter alloc] initFromFormat:[self.audioEngine.inputNode outputFormatForBus:0] toFormat:formatOut];
+    AVAudioConverter *audioConverter = [[AVAudioConverter alloc] initFromFormat:[self.audioEngine.inputNode outputFormatForBus:0] toFormat:self.recordFormat];
 
     
     // 安装tap
@@ -115,9 +117,9 @@
             return;
         
         // 进行格式换砖
-        float ratio = [[buffer format] sampleRate]/formatOut.sampleRate;
+        float ratio = [[buffer format] sampleRate]/weakSelf.recordFormat.sampleRate;
         UInt32 capacity = buffer.frameCapacity/ratio;
-        AVAudioPCMBuffer *convertedBuffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:formatOut frameCapacity:capacity];
+        AVAudioPCMBuffer *convertedBuffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:weakSelf.recordFormat frameCapacity:capacity];
         AVAudioConverterInputBlock inputBlock = ^(AVAudioPacketCount inNumberOfPackets, AVAudioConverterInputStatus* outStatus){
             *outStatus = AVAudioConverterInputStatus_HaveData;
             return buffer;
@@ -126,7 +128,7 @@
         
 
         // 写文件
-        UInt32 length = convertedBuffer.frameLength * formatOut.channelCount * [weakSelf bytesOfCommonFormat:formatOut.commonFormat];
+        UInt32 length = convertedBuffer.frameLength * weakSelf.recordFormat.channelCount * [weakSelf bytesOfCommonFormat:weakSelf.recordFormat.commonFormat];
         OSStatus status = AudioFileWriteBytes(weakSelf.recordFileID, NO, inStartingByte, &length, convertedBuffer.int16ChannelData[0]);
         assert(status == noErr);
         if (status != noErr)
@@ -138,7 +140,7 @@
         
         
         // 计算总录制时长，回调
-        weakSelf.recordDuration = inStartingByte / formatOut.sampleRate / formatOut.channelCount / [weakSelf bytesOfCommonFormat:formatOut.commonFormat];
+        weakSelf.recordDuration = inStartingByte / weakSelf.recordFormat.sampleRate / weakSelf.recordFormat.channelCount / [weakSelf bytesOfCommonFormat:weakSelf.recordFormat.commonFormat];
         if ([weakSelf.delegate respondsToSelector:@selector(recorderBuffer:duration:)]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf.delegate recorderBuffer:convertedBuffer duration:weakSelf.recordDuration];
@@ -204,7 +206,10 @@
     
 //    [self print_wav_head_info];
 //    return;
-     
+    if (time > self.recordDuration) {
+        return;
+    }
+    
     if (self.isRec) {
         return;
     }
@@ -212,7 +217,6 @@
     if (self.recordFilePath == nil) {
         return;
     }
-    
     
     if (!self.isPlaying) {
         NSError *error;
@@ -343,6 +347,9 @@
     return _audioPlayerNode;
 }
 
+-(AVAudioFormat *)recordFormat{
+    return [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:16000 channels:1 interleaved:true];;
+}
 
 #pragma mark - AVAudioPlayerDelegate
 -(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
@@ -387,7 +394,71 @@
     }
 }
 
+#pragma mark - public
+- (void)truncateFile:(NSTimeInterval)time {
+    
+    // 不能大于录制时间
+    time = MIN(time, self.recordDuration);
+    
+    // 解决精度问题
+    time = round(time * 1000)/1000;
+    
+    // 继续录音的情况，计算从多少byte开始截断
+    UInt32 truncateByte = (UInt32)(time * self.recordFormat.sampleRate * self.recordFormat.channelCount * [self bytesOfCommonFormat:self.recordFormat.commonFormat]);
+    
+    // 截断
+    [self truncateFileForFormat:self.recordFormat truncateByte:truncateByte];
+    
+    // 重新设置录制时间
+    self.recordDuration = time;
+}
+
 #pragma mark - help
+
+- (void)truncateFileForFormat:(AVAudioFormat *)format truncateByte:(UInt32)truncateByte {
+    OSStatus stats = AudioFileOpenURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileReadPermission, kAudioFileWAVEType, &_recordFileID);
+    assert(stats==0);
+    
+    
+    // 临时创建一个文件
+    AudioFileID tmpfileid;
+    // 设置录音文件地址
+    NSString *dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *tmpFilePath = [dir stringByAppendingString:@"/recording_tempfile.wav"];
+    stats = AudioFileCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:tmpFilePath], kAudioFileWAVEType, format.streamDescription, kAudioFileFlags_EraseFile, &tmpfileid);
+    assert(stats==0);
+    
+    
+    // 如果一次性缓存太多，会闪退
+    const int bytesPreLoop = 32000*5; // 每次拷贝字节数
+    int loopCount = truncateByte % bytesPreLoop ? truncateByte / bytesPreLoop + 1 : truncateByte / bytesPreLoop; //总拷贝次数
+    char buf[bytesPreLoop]; //缓存
+    UInt32 startpos = 0; //开始拷贝的位置
+    UInt32 numofbytes = 0; //结束拷贝的位置
+    
+    for (int i=0; i<loopCount; i++) {
+        
+        startpos = i*bytesPreLoop;
+        numofbytes = MIN(bytesPreLoop, truncateByte-startpos);
+        
+        AudioFileReadBytes(_recordFileID, NO, startpos, &numofbytes, buf);
+        AudioFileWriteBytes(tmpfileid, NO, startpos, &numofbytes, buf);
+    }
+    
+    AudioFileClose(_recordFileID);
+    AudioFileClose(tmpfileid);
+    
+    //删除源文件
+    NSError *err;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    [fileManager removeItemAtPath:self.recordFilePath error:&err];
+    assert(err==nil);
+    
+    //移动文件
+    [fileManager moveItemAtPath:tmpFilePath toPath:self.recordFilePath error:&err];
+    assert(err==nil);
+    
+}
 
 /// 打开音频文件，可能会进行截断操作
 /// @param format 音频文件格式
@@ -395,46 +466,9 @@
 - (void)openfileWithFormat:(AVAudioFormat *)format truncateByte:(UInt32)truncateByte {
     if (truncateByte>0) {
         
-        OSStatus stats = AudioFileOpenURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileReadPermission, kAudioFileWAVEType, &_recordFileID);
-        assert(stats==0);
+        [self truncateFileForFormat:format truncateByte:truncateByte];
         
-        
-        // 临时创建一个文件
-        AudioFileID tmpfileid;
-        // 设置录音文件地址
-        NSString *dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-        NSString *tmpFilePath = [dir stringByAppendingString:@"/recording_tempfile.wav"];
-        stats = AudioFileCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:tmpFilePath], kAudioFileWAVEType, format.streamDescription, kAudioFileFlags_EraseFile, &tmpfileid);
-        assert(stats==0);
-        
-        
-        // 如果一次性缓存太多，会闪退
-        const int bytesPreLoop = 32000*5; // 每次拷贝字节数
-        int loopCount = truncateByte % bytesPreLoop ? truncateByte / bytesPreLoop + 1 : truncateByte / bytesPreLoop; //总拷贝次数
-        char buf[bytesPreLoop]; //缓存
-        UInt32 startpos = 0; //开始拷贝的位置
-        UInt32 numofbytes = 0; //结束拷贝的位置
-        
-        for (int i=0; i<loopCount; i++) {
-            
-            startpos = i*bytesPreLoop;
-            numofbytes = MIN(bytesPreLoop, truncateByte-startpos);
-            
-            AudioFileReadBytes(_recordFileID, NO, startpos, &numofbytes, buf);
-            AudioFileWriteBytes(tmpfileid, NO, startpos, &numofbytes, buf);
-        }
-        
-        AudioFileClose(_recordFileID);
-        AudioFileClose(tmpfileid);
-        
-        //删除源文件
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        [fileManager removeItemAtPath:tmpFilePath error:nil];
-        
-        //移动文件
-        [fileManager moveItemAtPath:tmpFilePath toPath:self.recordFilePath error:nil];
-        
-        stats = AudioFileOpenURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileReadWritePermission, kAudioFileWAVEType, &_recordFileID);
+        OSStatus stats = AudioFileOpenURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileReadWritePermission, kAudioFileWAVEType, &_recordFileID);
         assert(stats==0);
         
     }else{
