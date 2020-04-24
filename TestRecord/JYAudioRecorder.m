@@ -203,9 +203,7 @@
 }
 
 -(void)playAtTime:(NSTimeInterval)time{
-    
-//    [self print_wav_head_info];
-//    return;
+        
     if (time > self.recordDuration) {
         return;
     }
@@ -431,7 +429,7 @@
     
     // 如果一次性缓存太多，会闪退
     const int bytesPreLoop = 32000*5; // 每次拷贝字节数
-    int loopCount = truncateByte % bytesPreLoop ? truncateByte / bytesPreLoop + 1 : truncateByte / bytesPreLoop; //总拷贝次数
+    int loopCount = ceil(truncateByte / 1.0 / bytesPreLoop); //总拷贝次数
     char buf[bytesPreLoop]; //缓存
     UInt32 startpos = 0; //开始拷贝的位置
     UInt32 numofbytes = 0; //结束拷贝的位置
