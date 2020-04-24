@@ -63,12 +63,13 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
     [self addButtonWith:@"继续录音" frame:CGRectMake(200, 120, 100, 50) action:@selector(resumeBtnAction)];
     [self addButtonWith:@"停止录音" frame:CGRectMake(80, 190, 100, 50) action:@selector(stopBtnAction)];
     [self addButtonWith:@"从1秒开始" frame:CGRectMake(200, 190, 100, 50) action:@selector(recordFromTimeBtnAction)];
+    [self addButtonWith:@"2秒截断" frame:CGRectMake(80, 260, 100, 50) action:@selector(truncateBtnAction)];
     
-    [self addButtonWith:@"播放录音" frame:CGRectMake(80, 260, 100, 50) action:@selector(playBtnAction)];
-    [self addButtonWith:@"停止播放" frame:CGRectMake(200, 260, 100, 50) action:@selector(stopPlayBtnAction)];
-    [self addButtonWith:@"暂停播放" frame:CGRectMake(80, 330, 100, 50) action:@selector(pausePlayBtnAction)];
-    [self addButtonWith:@"继续播放" frame:CGRectMake(200, 330, 100, 50) action:@selector(resumePlayBtnAction)];
-    [self addButtonWith:@"2秒开播" frame:CGRectMake(80, 400, 100, 50) action:@selector(playattime)];
+    [self addButtonWith:@"播放录音" frame:CGRectMake(80, 330, 100, 50) action:@selector(playBtnAction)];
+    [self addButtonWith:@"停止播放" frame:CGRectMake(200, 330, 100, 50) action:@selector(stopPlayBtnAction)];
+    [self addButtonWith:@"暂停播放" frame:CGRectMake(80, 400, 100, 50) action:@selector(pausePlayBtnAction)];
+    [self addButtonWith:@"继续播放" frame:CGRectMake(200, 400, 100, 50) action:@selector(resumePlayBtnAction)];
+    [self addButtonWith:@"2秒开播" frame:CGRectMake(80, 470, 100, 50) action:@selector(playattime)];
     
     [self addButtonWith:@"释放录音器" frame:CGRectMake(80, 540, 100, 50) action:@selector(releaseRecorder)];
 
@@ -93,6 +94,9 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
 
 -(void)recordFromTimeBtnAction{
     [self.recorder startRecordAtTime:1];
+}
+-(void)truncateBtnAction{
+    [self.recorder truncateFile:2];
 }
 
 -(void)playBtnAction{
