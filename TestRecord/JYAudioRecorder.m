@@ -42,8 +42,6 @@
         
         self.bgmVolume = 0.5;
         
-        [self.audioEngine attachNode:self.audioPlayerNode];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterruptionNotification:) name:AVAudioSessionInterruptionNotification object:nil];
     }
     return self;
@@ -96,7 +94,24 @@
     
     
     // 打开文件，处理截断
-    [self openfileWithFormat:self.recordFormat truncateByte:truncateByte];
+    if (truncateByte>0) {
+        
+        // 截断
+        if (time < self.recordDuration) {
+            [self truncateFileForFormat:self.recordFormat truncateByte:truncateByte];
+        }
+        
+        // 打开文件
+        OSStatus stats = AudioFileOpenURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileReadWritePermission, kAudioFileWAVEType, &_recordFileID);
+        assert(stats==0);
+        
+    }else{
+        
+        // 创建文件
+        OSStatus stats = AudioFileCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileWAVEType, self.recordFormat.streamDescription, kAudioFileFlags_EraseFile, &_recordFileID);
+        assert(stats==0);
+        
+    }
     
     
     // 重新设置录制时间
@@ -154,6 +169,8 @@
     AVAudioFramePosition startFrame = (time + self.bgmPlayOffset) * bgmFile.fileFormat.sampleRate;
     if (bgmFile && startFrame < [bgmFile length]) {
         
+        [self.audioEngine attachNode:self.audioPlayerNode];
+        
         // 计算播放的帧数
         AVAudioFrameCount frameCount = (AVAudioFrameCount)([bgmFile length] - startFrame);
         if (self.bgmPlayLength > 0) {
@@ -190,9 +207,16 @@
     if (self.isRec) {
         
         [self.audioPlayerNode stop];
-        [self.audioEngine stop];
+        [self.audioEngine disconnectNodeInput:self.audioPlayerNode];
+        [self.audioEngine disconnectNodeOutput:self.audioPlayerNode];
+        [self.audioEngine detachNode:self.audioPlayerNode];
+        self.audioPlayerNode = nil;
         
+        
+        [self.audioEngine stop];
         [self.audioEngine.inputNode removeTapOnBus:0];
+        self.audioEngine = nil;
+        
         
         AudioFileClose(self.recordFileID);
         self.recordFileID = nil;
@@ -468,25 +492,6 @@
     
 }
 
-/// 打开音频文件，可能会进行截断操作
-/// @param format 音频文件格式
-/// @param truncateByte 从第几个字节开始截断
-- (void)openfileWithFormat:(AVAudioFormat *)format truncateByte:(UInt32)truncateByte {
-    if (truncateByte>0) {
-        
-        [self truncateFileForFormat:format truncateByte:truncateByte];
-        
-        OSStatus stats = AudioFileOpenURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileReadWritePermission, kAudioFileWAVEType, &_recordFileID);
-        assert(stats==0);
-        
-    }else{
-        
-        // 创建文件
-        OSStatus stats = AudioFileCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileWAVEType, format.streamDescription, kAudioFileFlags_EraseFile, &_recordFileID);
-        assert(stats==0);
-        
-    }
-}
 
 -(void)print_wav_head_info{
     
