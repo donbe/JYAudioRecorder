@@ -84,7 +84,9 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
 }
 
 -(void)recordBtnAction{
-    self.recorder.fileBGPath = [[[NSBundle mainBundle] URLForResource:@"output" withExtension:@"mp3"] relativePath];
+    self.recorder.bgmPath = [[[NSBundle mainBundle] URLForResource:@"output" withExtension:@"mp3"] relativePath];
+    self.recorder.bgmPlayOffset = 2.0;
+    self.recorder.bgmPlayLength = 2.0;
     [self.recorder startRecord];
 }
 

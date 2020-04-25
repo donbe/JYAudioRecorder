@@ -46,8 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface JYAudioRecorder : NSObject
 
 @property(nonatomic,strong,readonly)NSString *recordFilePath; //录制的音频保存地址
-@property(nonatomic,strong)NSString *fileBGPath; //背景音地址
-@property(nonatomic)float backgroundVolume; //背景音音量，默认0.2
+
+@property(nonatomic,strong)NSString *bgmPath; //背景音地址
+@property(nonatomic)float bgmVolume; //背景音音量，默认0.5
+@property(nonatomic)NSTimeInterval bgmPlayOffset; //背景音跳过的秒数
+@property(nonatomic)NSTimeInterval bgmPlayLength; //背景音播放的秒数
 
 @property(nonatomic,readonly)BOOL isRec; //录制状态
 @property(nonatomic,readonly)BOOL isPlaying; //播放状态
@@ -87,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 // 给背景音加的延迟秒数
-+(NSTimeInterval)bgLatency;
++(NSTimeInterval)bgmLatency;
 
 @end
 

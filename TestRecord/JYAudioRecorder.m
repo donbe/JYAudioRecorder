@@ -15,7 +15,7 @@
 @property(nonatomic,strong)AVAudioPlayerNode *audioPlayerNode;
 
 @property(nonatomic) AVAudioPlayer *audioPlayer;
-@property(nonatomic) AVAudioPlayer *audioBGPlayer;
+@property(nonatomic) AVAudioPlayer *bgmPlayer;
 
 @property(nonatomic) NSTimeInterval pausePoint;
 
@@ -40,7 +40,7 @@
     self = [super init];
     if (self) {
         
-        self.backgroundVolume = 0.2;
+        self.bgmVolume = 0.5;
         
         [self.audioEngine attachNode:self.audioPlayerNode];
         
@@ -80,9 +80,9 @@
     
     
     // 创建播放文件
-    AVAudioFile *audiofile;
-    if (self.fileBGPath) {
-        audiofile = [[AVAudioFile alloc] initForReading:[NSURL fileURLWithPath:self.fileBGPath] error:&error];
+    AVAudioFile *bgmFile;
+    if (self.bgmPath) {
+        bgmFile = [[AVAudioFile alloc] initForReading:[NSURL fileURLWithPath:self.bgmPath] error:&error];
         assert(error == nil);
     }
     
@@ -151,18 +151,25 @@
     
     
     // 播放设置
-    AVAudioFramePosition startFrame = time * audiofile.fileFormat.sampleRate;
-    if (audiofile && startFrame < [audiofile length]) {
+    AVAudioFramePosition startFrame = (time + self.bgmPlayOffset) * bgmFile.fileFormat.sampleRate;
+    if (bgmFile && startFrame < [bgmFile length]) {
+        
+        // 计算播放的帧数
+        AVAudioFrameCount frameCount = (AVAudioFrameCount)([bgmFile length] - startFrame);
+        if (self.bgmPlayLength > 0) {
+            frameCount = MIN(self.bgmPlayLength * bgmFile.fileFormat.sampleRate, frameCount);
+        }
+        
         // 连接背景音乐node
-        [self.audioEngine connect:self.audioPlayerNode to:self.audioEngine.mainMixerNode format:audiofile.processingFormat];
+        [self.audioEngine connect:self.audioPlayerNode to:self.audioEngine.mainMixerNode format:bgmFile.processingFormat];
         
         // 设置播放区间
-        [self.audioPlayerNode scheduleSegment:audiofile startingFrame:startFrame frameCount:(AVAudioFrameCount)([audiofile length] - startFrame) atTime:nil completionHandler:^{
+        [self.audioPlayerNode scheduleSegment:bgmFile startingFrame:startFrame frameCount:frameCount atTime:nil completionHandler:^{
             NSLog(@"player complete");
         }];
         
         //准备一秒的缓存
-        [self.audioPlayerNode prepareWithFrameCount:(AVAudioFrameCount)audiofile.fileFormat.sampleRate];
+        [self.audioPlayerNode prepareWithFrameCount:(AVAudioFrameCount)bgmFile.fileFormat.sampleRate];
     }
     
 
@@ -173,8 +180,8 @@
     
     
     // 开始播放
-    if (audiofile && startFrame < [audiofile length]) {
-        self.audioPlayerNode.volume = self.backgroundVolume;
+    if (bgmFile && startFrame < [bgmFile length]) {
+        self.audioPlayerNode.volume = self.bgmVolume;
         [self.audioPlayerNode play];
     }
 }
@@ -228,30 +235,30 @@
         self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.recordFilePath] error:&error];
         assert(error == nil);
         
-        self.audioBGPlayer = nil;
-        if (self.fileBGPath) {
-            self.audioBGPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.fileBGPath] error:&error];
+        self.bgmPlayer = nil;
+        if (self.bgmPath) {
+            self.bgmPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.bgmPath] error:&error];
             assert(error == nil);
         }
         
         self.audioPlayer.delegate = self;
-        self.audioBGPlayer.delegate = self;
+        self.bgmPlayer.delegate = self;
         
-        self.audioBGPlayer.volume = self.backgroundVolume;
+        self.bgmPlayer.volume = self.bgmVolume;
     }
     
 
     self.audioPlayer.currentTime = time;
-    self.audioBGPlayer.currentTime = time;
+    self.bgmPlayer.currentTime = time + self.bgmPlayOffset;
     
     if (!self.audioPlayer.isPlaying) {
         // 同步两个播放器
         NSTimeInterval shortStartDelay = 0.01;
-        NSTimeInterval shortBGStartDelay = [JYAudioRecorder bgLatency];
+        NSTimeInterval shortBGMStartDelay = [JYAudioRecorder bgmLatency];
         NSTimeInterval now = self.audioPlayer.deviceCurrentTime;
         
         [self.audioPlayer playAtTime: now + shortStartDelay];
-        [self.audioBGPlayer playAtTime: now + shortStartDelay + shortBGStartDelay];
+        [self.bgmPlayer playAtTime: now + shortStartDelay + shortBGMStartDelay];
         
     }
     
@@ -262,7 +269,7 @@
 -(void)pausePlay{
     if (self.isPlaying) {
         [self.audioPlayer stop];
-        [self.audioBGPlayer stop];
+        [self.bgmPlayer stop];
         [self stopTimer];
     }
 }
@@ -270,10 +277,10 @@
 -(void)resumePlay{
     if (self.isPlaying) {
         [self.audioPlayer prepareToPlay];
-        [self.audioBGPlayer prepareToPlay];
+        [self.bgmPlayer prepareToPlay];
         
         [self.audioPlayer play];
-        [self.audioBGPlayer play];
+        [self.bgmPlayer play];
         [self startTimer];
     }
 }
@@ -282,7 +289,7 @@
     if (self.isPlaying) {
         
         [self.audioPlayer stop];
-        [self.audioBGPlayer stop];
+        [self.bgmPlayer stop];
         
         [[AVAudioSession sharedInstance] setActive:NO error:nil];
         
@@ -389,6 +396,9 @@
 -(void)playTimerCB{
     if ([self.delegate respondsToSelector:@selector(recorderPlayingTime:duration:)]) {
         [self.delegate recorderPlayingTime:self.audioPlayer.currentTime duration:self.audioPlayer.duration];
+        if (self.bgmPlayLength > 0 && self.bgmPlayer.currentTime > self.bgmPlayOffset+self.bgmPlayLength) {
+            [self.bgmPlayer stop];
+        }
     }
 }
 
@@ -567,7 +577,7 @@
 }
 
 #pragma mark -
-+(NSTimeInterval)bgLatency{
++(NSTimeInterval)bgmLatency{
     return [self isIphoneX] ? 0.17 : 0.20;
 }
 @end
