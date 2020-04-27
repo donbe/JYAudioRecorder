@@ -209,8 +209,14 @@
     if (self.isRec) {
         
         [self.audioPlayerNode stop];
-        [self.audioEngine disconnectNodeInput:self.audioPlayerNode];
-        [self.audioEngine disconnectNodeOutput:self.audioPlayerNode];
+        
+        @try { // 避免因为之前没有connect node导致的闪退
+            [self.audioEngine disconnectNodeInput:self.audioPlayerNode];
+            [self.audioEngine disconnectNodeOutput:self.audioPlayerNode];
+        } @catch (NSException *exception) {
+            NSLog(@"%@",exception);
+        }
+        
         [self.audioEngine detachNode:self.audioPlayerNode];
         self.audioPlayerNode = nil;
         
