@@ -174,16 +174,18 @@
         // 计算播放的帧数
         AVAudioFrameCount frameCount = (AVAudioFrameCount)([bgmFile length] - startFrame);
         if (self.bgmPlayLength > 0) {
-            frameCount = MIN(self.bgmPlayLength * bgmFile.fileFormat.sampleRate, frameCount);
+            frameCount = MIN(MAX(0,self.bgmPlayLength - time) * bgmFile.fileFormat.sampleRate, frameCount);
         }
         
         // 连接背景音乐node
         [self.audioEngine connect:self.audioPlayerNode to:self.audioEngine.mainMixerNode format:bgmFile.processingFormat];
         
         // 设置播放区间
-        [self.audioPlayerNode scheduleSegment:bgmFile startingFrame:startFrame frameCount:frameCount atTime:nil completionHandler:^{
-            NSLog(@"player complete");
-        }];
+        if (frameCount>0) {
+            [self.audioPlayerNode scheduleSegment:bgmFile startingFrame:startFrame frameCount:frameCount atTime:nil completionHandler:^{
+                NSLog(@"player complete");
+            }];
+        }
         
         //准备一秒的缓存
         [self.audioPlayerNode prepareWithFrameCount:(AVAudioFrameCount)bgmFile.fileFormat.sampleRate];
