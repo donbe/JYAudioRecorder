@@ -12,6 +12,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+typedef NS_ENUM(NSInteger, JYAudioRecorderState) {
+    JYAudioRecorderStateNormal,             // 初始状态
+    JYAudioRecorderStateRecording,          // 录制中
+    JYAudioRecorderStatePlaying,            // 播放中
+    JYAudioRecorderStatePause,              // 播放暂停中
+};
+
+
 @protocol JYAudioRecorderDelegate <NSObject>
 
 @optional
@@ -40,7 +49,12 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)recorderFinish;
 
 
+/// 状态发生变化
+/// @param state 当前状态
+-(void)recorderStateChange:(JYAudioRecorderState)state;
+
 @end
+
 
 
 @interface JYAudioRecorder : NSObject
@@ -53,7 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic)NSTimeInterval bgmPlayLength; //背景音播放的秒数
 
 @property(nonatomic,readonly)BOOL isRec; //录制状态
-@property(nonatomic,readonly)BOOL isPlaying; //播放状态
+@property(nonatomic,readonly)BOOL isPlaying; //播放状态，暂停状态也算播放中
+@property(nonatomic,readonly)JYAudioRecorderState state; //播放器状态
 
 @property(nonatomic,readonly)NSTimeInterval recordDuration; //录制时长
 @property(nonatomic,readonly)NSTimeInterval currentPlayTime; //当前播放时间点

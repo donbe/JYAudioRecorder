@@ -28,6 +28,7 @@
 @property(nonatomic,readwrite)NSTimeInterval recordDuration; //录制时长
 @property(nonatomic,readwrite)BOOL isRec; //录制状态
 @property(nonatomic,readwrite)BOOL isPlaying; //播放状态
+@property(nonatomic,readwrite)JYAudioRecorderState state; //播放器状态
 
 
 
@@ -303,6 +304,7 @@
         [self.audioPlayer stop];
         [self.bgmPlayer stop];
         [self stopTimer];
+        self.state = JYAudioRecorderStatePause;
     }
 }
 
@@ -314,6 +316,7 @@
         [self.audioPlayer play];
         [self.bgmPlayer play];
         [self startTimer];
+        self.state = JYAudioRecorderStatePlaying;
     }
 }
 
@@ -336,10 +339,12 @@
         _isRec = isRec;
         
         if (isRec) {
+            self.state = JYAudioRecorderStateRecording;
             if ([self.delegate respondsToSelector:@selector(recorderStart)]) {
                 [self.delegate recorderStart];
             }
         }else{
+            self.state = JYAudioRecorderStateNormal;
             if ([self.delegate respondsToSelector:@selector(recorderFinish)]) {
                 [self.delegate recorderFinish];
             }
@@ -352,10 +357,12 @@
         _isPlaying = isPlaying;
         
         if (isPlaying) {
+            self.state = JYAudioRecorderStatePlaying;
             if ([self.delegate respondsToSelector:@selector(recorderPlayingStart)]) {
                 [self.delegate recorderPlayingStart];
             }
         }else{
+            self.state = JYAudioRecorderStateNormal;
             if ([self.delegate respondsToSelector:@selector(recorderPlayingFinish)]) {
                 [self.delegate recorderPlayingFinish];
             }
@@ -364,6 +371,14 @@
     }
 }
 
+-(void)setState:(JYAudioRecorderState)state{
+    if (state != _state) {
+        _state = state;
+        if ([self.delegate respondsToSelector:@selector(recorderStateChange:)]) {
+            [self.delegate recorderStateChange:state];
+        }
+    }
+}
 
 -(NSTimeInterval)currentPlayTime{
     return self.audioPlayer.currentTime;
@@ -416,8 +431,9 @@
 }
 
 #pragma mark - NStimer
-- (NSTimer * _Nonnull)startTimer{
-    return self.playTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(playTimerCB) userInfo:nil repeats:YES];
+- (void)startTimer{
+    [self stopTimer];
+    self.playTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(playTimerCB) userInfo:nil repeats:YES];
 }
 
 - (void)stopTimer {

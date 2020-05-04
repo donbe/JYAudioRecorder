@@ -202,4 +202,8 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
     NSLog(@"play time: %f / %f",time,duration);
 }
 
+
+-(void)recorderStateChange:(JYAudioRecorderState)state{
+    NSLog(@"recorderStateChange:%ld",(long)state);
+}
 @end
