@@ -301,22 +301,30 @@
 
 -(void)pausePlay{
     if (self.isPlaying) {
+        
         [self.audioPlayer stop];
         [self.bgmPlayer stop];
+        
         [self stopTimer];
+        
         self.state = JYAudioRecorderStatePause;
+        _isPlaying = NO;
     }
 }
 
 -(void)resumePlay{
-    if (self.isPlaying) {
+    if (self.state == JYAudioRecorderStatePause) {
+        
         [self.audioPlayer prepareToPlay];
         [self.bgmPlayer prepareToPlay];
-        
         [self.audioPlayer play];
         [self.bgmPlayer play];
+        
         [self startTimer];
+        
         self.state = JYAudioRecorderStatePlaying;
+        _isPlaying = YES;
+        
     }
 }
 
