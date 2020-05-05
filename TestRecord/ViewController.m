@@ -59,6 +59,8 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
     }
     
     
+   
+    
     [self addButtonWith:@"开始录音" frame:CGRectMake(80, 120, 100, 50) action:@selector(recordBtnAction)];
     [self addButtonWith:@"继续录音" frame:CGRectMake(200, 120, 100, 50) action:@selector(resumeBtnAction)];
     [self addButtonWith:@"停止录音" frame:CGRectMake(80, 190, 100, 50) action:@selector(stopBtnAction)];
@@ -79,14 +81,18 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
     self.scrollView.backgroundColor = [UIColor cyanColor];
 }
 
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+}
+
 -(void)resumeBtnAction{
     [self.recorder startRecordAtTime:self.recorder.recordDuration];
 }
 
 -(void)recordBtnAction{
     self.recorder.bgmPath = [[[NSBundle mainBundle] URLForResource:@"output" withExtension:@"mp3"] relativePath];
-    self.recorder.bgmPlayOffset = 2.0;
-    self.recorder.bgmPlayLength = 2.0;
+//    self.recorder.bgmPlayOffset = 2.0;
+//    self.recorder.bgmPlayLength = 2.0;
     [self.recorder startRecord];
 }
 

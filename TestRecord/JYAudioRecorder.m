@@ -30,7 +30,7 @@
 @property(nonatomic,readwrite)BOOL isPlaying; //播放状态
 @property(nonatomic,readwrite)JYAudioRecorderState state; //播放器状态
 
-
+@property(nonatomic,readwrite)BOOL recordWithHeadphone; //是否使用了有线耳机录制
 
 @end
 
@@ -41,7 +41,7 @@
     self = [super init];
     if (self) {
         
-        self.bgmVolume = 0.5;
+        self.bgmVolume = 0.4;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterruptionNotification:) name:AVAudioSessionInterruptionNotification object:nil];
     }
@@ -204,6 +204,9 @@
         self.audioPlayerNode.volume = self.bgmVolume;
         [self.audioPlayerNode play];
     }
+    
+    // 检测是否插入耳机
+    self.recordWithHeadphone = [JYAudioRecorder detectingHeadphones];
 }
 
 -(void)stopRecord{
@@ -269,7 +272,7 @@
         assert(error == nil);
         
         self.bgmPlayer = nil;
-        if (self.bgmPath) {
+        if (self.bgmPath && self.recordWithHeadphone) {
             self.bgmPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.bgmPath] error:&error];
             assert(error == nil);
         }
@@ -606,6 +609,24 @@
             return 2;
     }
 }
+
+
+
+/// 判断是否插入有线耳机
++(BOOL)detectingHeadphones{
+    AVAudioSessionRouteDescription *currentRoute = [AVAudioSession sharedInstance].currentRoute;
+    if (currentRoute == nil) {
+        return NO;
+    }
+    
+    for (AVAudioSessionPortDescription *desc in currentRoute.outputs) {
+        if ([desc.portType isEqualToString:AVAudioSessionPortHeadphones]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 
 #pragma mark -
 -(void)dealloc{

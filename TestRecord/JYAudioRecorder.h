@@ -62,13 +62,16 @@ typedef NS_ENUM(NSInteger, JYAudioRecorderState) {
 @property(nonatomic,strong,readonly)NSString *recordFilePath; //录制的音频保存地址
 
 @property(nonatomic,strong)NSString *bgmPath; //背景音地址
-@property(nonatomic)float bgmVolume; //背景音音量，默认0.5
+@property(nonatomic)float bgmVolume; //背景音音量，默认0.4
 @property(nonatomic)NSTimeInterval bgmPlayOffset; //背景音跳过的秒数
 @property(nonatomic)NSTimeInterval bgmPlayLength; //背景音播放的秒数
+
 
 @property(nonatomic,readonly)BOOL isRec; //录制状态
 @property(nonatomic,readonly)BOOL isPlaying; //播放状态
 @property(nonatomic,readonly)JYAudioRecorderState state; //播放器状态
+@property(nonatomic,readonly)BOOL recordWithHeadphone; //是否使用了有线耳机录制
+
 
 @property(nonatomic,readonly)NSTimeInterval recordDuration; //录制时长
 @property(nonatomic,readonly)NSTimeInterval currentPlayTime; //当前播放时间点
@@ -106,6 +109,9 @@ typedef NS_ENUM(NSInteger, JYAudioRecorderState) {
 #pragma mark -
 // 给背景音加的延迟秒数
 +(NSTimeInterval)bgmLatency;
+
+/// 判断是否插入有线耳机
++(BOOL)detectingHeadphones;
 
 @end
 
