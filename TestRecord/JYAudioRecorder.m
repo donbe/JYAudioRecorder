@@ -143,6 +143,11 @@
         [audioConverter convertToBuffer:convertedBuffer error:nil withInputFromBlock:inputBlock];
         
 
+        // 这样可以让回调达到每秒40次
+        buffer.frameLength = buffer.frameLength/4;
+        convertedBuffer.frameLength = convertedBuffer.frameLength/4;
+        
+        
         // 写文件
         UInt32 length = convertedBuffer.frameLength * weakSelf.recordFormat.channelCount * [weakSelf bytesOfCommonFormat:weakSelf.recordFormat.commonFormat];
         OSStatus status = AudioFileWriteBytes(weakSelf.recordFileID, NO, inStartingByte, &length, convertedBuffer.int16ChannelData[0]);
@@ -444,7 +449,7 @@
 #pragma mark - NStimer
 - (void)startTimer{
     [self stopTimer];
-    self.playTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(playTimerCB) userInfo:nil repeats:YES];
+    self.playTimer = [NSTimer scheduledTimerWithTimeInterval:0.025 target:self selector:@selector(playTimerCB) userInfo:nil repeats:YES];
 }
 
 - (void)stopTimer {
