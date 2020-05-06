@@ -168,6 +168,9 @@
             });
         }
  
+        if (self.maxRecordTime > 0 && weakSelf.recordDuration >= self.maxRecordTime) {
+            [self stopRecord];
+        }
     }];
     
     

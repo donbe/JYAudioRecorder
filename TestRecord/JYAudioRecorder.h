@@ -76,6 +76,8 @@ typedef NS_ENUM(NSInteger, JYAudioRecorderState) {
 @property(nonatomic,readonly)NSTimeInterval recordDuration; //录制时长
 @property(nonatomic,readonly)NSTimeInterval currentPlayTime; //当前播放时间点
 
+@property(nonatomic)NSTimeInterval maxRecordTime; //最大录制时长，超过这个长度将停止录音
+
 @property(atomic,weak)id<JYAudioRecorderDelegate> delegate;
 
 // 从头开始录音
