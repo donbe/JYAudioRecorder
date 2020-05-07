@@ -169,9 +169,7 @@
         }
  
         if (self.maxRecordTime > 0 && weakSelf.recordDuration >= self.maxRecordTime) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self stopRecord];
-            });
+            [self stopRecord];
         }
     }];
     
@@ -361,12 +359,16 @@
         if (isRec) {
             self.state = JYAudioRecorderStateRecording;
             if ([self.delegate respondsToSelector:@selector(recorderStart)]) {
-                [self.delegate recorderStart];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.delegate recorderStart];
+                });
             }
         }else{
             self.state = JYAudioRecorderStateNormal;
             if ([self.delegate respondsToSelector:@selector(recorderFinish)]) {
-                [self.delegate recorderFinish];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.delegate recorderFinish];
+                });
             }
         }
     }
@@ -379,12 +381,16 @@
         if (isPlaying) {
             self.state = JYAudioRecorderStatePlaying;
             if ([self.delegate respondsToSelector:@selector(recorderPlayingStart)]) {
-                [self.delegate recorderPlayingStart];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.delegate recorderPlayingStart];
+                });
             }
         }else{
             self.state = JYAudioRecorderStateNormal;
             if ([self.delegate respondsToSelector:@selector(recorderPlayingFinish)]) {
-                [self.delegate recorderPlayingFinish];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.delegate recorderPlayingFinish];
+                });
             }
         }
         
@@ -395,7 +401,9 @@
     if (state != _state) {
         _state = state;
         if ([self.delegate respondsToSelector:@selector(recorderStateChange:)]) {
-            [self.delegate recorderStateChange:state];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate recorderStateChange:state];
+            });
         }
     }
 }
