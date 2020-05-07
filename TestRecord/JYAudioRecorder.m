@@ -169,7 +169,9 @@
         }
  
         if (self.maxRecordTime > 0 && weakSelf.recordDuration >= self.maxRecordTime) {
-            [self stopRecord];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self stopRecord];
+            });
         }
     }];
     
