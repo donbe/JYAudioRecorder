@@ -201,6 +201,10 @@
     }
     
 
+    if ([JYAudioRecorder detectingHeadphones]) {
+        [self.audioEngine connect:self.audioEngine.inputNode to:self.audioEngine.mainMixerNode format:nil];
+    }
+    
     // 启动引擎
     BOOL result = [self.audioEngine startAndReturnError:&error];
     assert(error == nil);
@@ -225,6 +229,7 @@
         @try { // 避免因为之前没有connect node导致的闪退
             [self.audioEngine disconnectNodeInput:self.audioPlayerNode];
             [self.audioEngine disconnectNodeOutput:self.audioPlayerNode];
+            [self.audioEngine disconnectNodeOutput:self.audioEngine.inputNode];
         } @catch (NSException *exception) {
             NSLog(@"%@",exception);
         }
