@@ -132,6 +132,11 @@
         if (weakSelf.recordFileID == nil)
             return;
         
+        // 控制最大录音时间
+        if (self.maxRecordTime > 0 && weakSelf.recordDuration >= self.maxRecordTime) {
+            [self stopRecord];
+        }
+        
         // 进行格式换砖
         float ratio = [[buffer format] sampleRate]/weakSelf.recordFormat.sampleRate;
         UInt32 capacity = buffer.frameCapacity/ratio;
@@ -168,9 +173,6 @@
             });
         }
  
-        if (self.maxRecordTime > 0 && weakSelf.recordDuration >= self.maxRecordTime) {
-            [self stopRecord];
-        }
     }];
     
     
