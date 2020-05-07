@@ -143,9 +143,9 @@
         [audioConverter convertToBuffer:convertedBuffer error:nil withInputFromBlock:inputBlock];
         
 
-        // 这样可以让回调达到每秒40次
-        buffer.frameLength = buffer.frameLength/4;
-        convertedBuffer.frameLength = convertedBuffer.frameLength/4;
+        // 这样可以让回调达到每秒20次
+        buffer.frameLength = buffer.frameLength/2;
+        convertedBuffer.frameLength = convertedBuffer.frameLength/2;
         
         
         // 写文件
@@ -320,8 +320,8 @@
         
         [self stopTimer];
         
-        self.state = JYAudioRecorderStatePause;
         _isPlaying = NO;
+        self.state = JYAudioRecorderStatePause;
     }
 }
 
@@ -335,9 +335,8 @@
         
         [self startTimer];
         
-        self.state = JYAudioRecorderStatePlaying;
         _isPlaying = YES;
-        
+        self.state = JYAudioRecorderStatePlaying;
     }
 }
 
