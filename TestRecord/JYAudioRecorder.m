@@ -135,6 +135,7 @@
         // 控制最大录音时间
         if (self.maxRecordTime > 0 && weakSelf.recordDuration >= self.maxRecordTime) {
             [self stopRecord];
+            return;
         }
         
         // 进行格式换砖
