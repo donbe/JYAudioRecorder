@@ -19,7 +19,6 @@
 
 @property(nonatomic) NSTimeInterval pausePoint;
 
-@property(nonatomic,strong)AVAudioFormat *recordFormat; //录音保存格式
 @property(nonatomic,strong,readwrite)NSString *recordFilePath; //录制的音频保存地址
 @property(nonatomic)AudioFileID recordFileID;
 
@@ -41,7 +40,9 @@
     self = [super init];
     if (self) {
         
-        self.bgmVolume = 0.4;
+        self.bgmVolume = 1.0;
+        
+        self.recordFormat = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:44100 channels:1 interleaved:true];;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterruptionNotification:) name:AVAudioSessionInterruptionNotification object:nil];
     }
@@ -433,10 +434,6 @@
         _audioPlayerNode = [AVAudioPlayerNode new];
     }
     return _audioPlayerNode;
-}
-
--(AVAudioFormat *)recordFormat{
-    return [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:16000 channels:1 interleaved:true];;
 }
 
 #pragma mark - AVAudioPlayerDelegate

@@ -59,6 +59,7 @@ typedef NS_ENUM(NSInteger, JYAudioRecorderState) {
 
 @interface JYAudioRecorder : NSObject
 
+@property(nonatomic,strong)AVAudioFormat *recordFormat; //录音保存格式，默认44100，AVAudioPCMFormatInt16，单通道
 @property(nonatomic,strong,readonly)NSString *recordFilePath; //录制的音频保存地址
 
 @property(nonatomic,strong)NSString *bgmPath; //背景音地址
