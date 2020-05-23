@@ -148,7 +148,13 @@
             *outStatus = AVAudioConverterInputStatus_HaveData;
             return buffer;
         };
-        [audioConverter convertToBuffer:convertedBuffer error:nil withInputFromBlock:inputBlock];
+        NSError *err;
+        [audioConverter convertToBuffer:convertedBuffer error:&err withInputFromBlock:inputBlock];
+        if (err) {
+            [self stopRecord];
+            assert(0);
+            return;
+        }
         
 
         // 这样可以让回调达到每秒20次
