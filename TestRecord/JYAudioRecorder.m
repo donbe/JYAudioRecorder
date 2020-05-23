@@ -67,7 +67,7 @@
     time = MIN(time, self.recordDuration);
     
     // 解决精度问题
-    time = round(time * 1000)/1000;
+    time = round(time * 100)/100;
     
     // 设置AVAudioSession
     NSError *error;
@@ -91,8 +91,9 @@
     self.recordFilePath = [dir stringByAppendingString:@"/recording_file_200422.wav"];
     
     
-    // 继续录音的情况，计算从多少byte开始截断
-    UInt32 truncateByte = (UInt32)(time * self.recordFormat.sampleRate * self.recordFormat.channelCount * [self bytesOfCommonFormat:self.recordFormat.commonFormat]);
+    // 继续录音的情况，计算从多少byte开始截断,并且确保截断不会截断在一个帧的中间
+    unsigned int bytePreFrame = self.recordFormat.channelCount * [self bytesOfCommonFormat:self.recordFormat.commonFormat];
+    UInt32 truncateByte = ((UInt32)(time * self.recordFormat.sampleRate * bytePreFrame)) / bytePreFrame * bytePreFrame;
     
     
     // 打开文件，处理截断
@@ -490,10 +491,11 @@
     time = MIN(time, self.recordDuration);
     
     // 解决精度问题
-    time = round(time * 1000)/1000;
+    time = round(time * 100)/100;
     
-    // 继续录音的情况，计算从多少byte开始截断
-    UInt32 truncateByte = (UInt32)(time * self.recordFormat.sampleRate * self.recordFormat.channelCount * [self bytesOfCommonFormat:self.recordFormat.commonFormat]);
+    // 继续录音的情况，计算从多少byte开始截断,并且确保截断不会截断在一个帧的中间
+    unsigned int bytePreFrame = self.recordFormat.channelCount * [self bytesOfCommonFormat:self.recordFormat.commonFormat];
+    UInt32 truncateByte = ((UInt32)(time * self.recordFormat.sampleRate * bytePreFrame)) / bytePreFrame * bytePreFrame;
     
     // 截断
     [self truncateFileForFormat:self.recordFormat truncateByte:truncateByte];
