@@ -31,6 +31,9 @@
 
 @property(nonatomic,readwrite)BOOL recordWithHeadphone; //是否使用了有线耳机录制
 
+@property(nonatomic,strong,nullable)NSError *error; //发生错误后，从这里获取错误信息
+
+
 @end
 
 
@@ -51,17 +54,19 @@
 
 
 #pragma mark -
--(void)startRecord{
-    [self startRecordAtTime:0];
+-(BOOL)startRecord{
+    return [self startRecordAtTime:0];
 }
 
 
--(void)startRecordAtTime:(NSTimeInterval)time{
+-(BOOL)startRecordAtTime:(NSTimeInterval)time{
     
     if (self.isRec || self.isPlaying) {
-        return;
+        [self writeError:@"正在录制或者播放中"];
+        return NO;
     }
-    self.isRec = YES;
+    
+    self.error = nil;
     
     // 不能大于录制时间
     time = MIN(time, self.recordDuration);
@@ -73,10 +78,24 @@
     NSError *error;
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker error:&error];
     assert(error == nil);
+    if (error) {
+        [self writeError:error.localizedFailureReason];
+        return NO;
+    }
+    
     [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeSpokenAudio error:&error];
     assert(error == nil);
+    if (error) {
+        [self writeError:error.localizedFailureReason];
+        return NO;
+    }
+    
     [[AVAudioSession sharedInstance] setActive:YES error:&error];
     assert(error == nil);
+    if (error) {
+        [self writeError:error.localizedFailureReason];
+        return NO;
+    }
     
     
     // 创建播放文件
@@ -84,6 +103,10 @@
     if (self.bgmPath) {
         bgmFile = [[AVAudioFile alloc] initForReading:[NSURL fileURLWithPath:self.bgmPath] error:&error];
         assert(error == nil);
+        if (error) {
+            [self writeError:error.localizedFailureReason];
+            return NO;
+        }
     }
     
     // 设置录音文件地址
@@ -101,19 +124,29 @@
         
         // 截断
         if (time < self.recordDuration) {
-            [self truncateFileForFormat:self.recordFormat truncateByte:truncateByte];
+            BOOL ret = [self truncateFileForFormat:self.recordFormat truncateByte:truncateByte];
+            if (!ret) {
+                return NO;
+            }
         }
         
         // 打开文件
         OSStatus stats = AudioFileOpenURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileReadWritePermission, kAudioFileWAVEType, &_recordFileID);
         assert(stats==0);
+        if (stats !=0) {
+            [self writeError:@"打开文件失败"];
+            return NO;
+        }
         
     }else{
         
         // 创建文件
         OSStatus stats = AudioFileCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileWAVEType, self.recordFormat.streamDescription, kAudioFileFlags_EraseFile, &_recordFileID);
         assert(stats==0);
-        
+        if (stats !=0) {
+            [self writeError:@"创建文件失败"];
+            return NO;
+        }
     }
     
     
@@ -124,6 +157,7 @@
     // 创建格式转换器
     AVAudioConverter *audioConverter = [[AVAudioConverter alloc] initFromFormat:[self.audioEngine.inputNode outputFormatForBus:0] toFormat:self.recordFormat];
 
+    self.isRec = YES;
     
     // 安装tap
     __block SInt64 inStartingByte = truncateByte;
@@ -131,8 +165,11 @@
     [self.audioEngine.inputNode installTapOnBus:0 bufferSize:2048 format:nil block:^(AVAudioPCMBuffer * _Nonnull buffer, AVAudioTime * _Nonnull when) {
 
         // 文件可能已经被关闭
-        if (weakSelf.recordFileID == nil)
+        if (weakSelf.recordFileID == nil){
+            [self stopRecord];
+            [self writeError:@"文件未打开"];
             return;
+        }
         
         // 控制最大录音时间
         if (self.maxRecordTime > 0 && weakSelf.recordDuration >= self.maxRecordTime) {
@@ -148,11 +185,12 @@
             *outStatus = AVAudioConverterInputStatus_HaveData;
             return buffer;
         };
-        NSError *err;
-        [audioConverter convertToBuffer:convertedBuffer error:&err withInputFromBlock:inputBlock];
-        if (err) {
+        NSError *error;
+        [audioConverter convertToBuffer:convertedBuffer error:&error withInputFromBlock:inputBlock];
+        assert(error == nil);
+        if (error) {
             [self stopRecord];
-            assert(0);
+            [self writeError:@"格式转换失败"];
             return;
         }
         
@@ -166,8 +204,11 @@
         UInt32 length = convertedBuffer.frameLength * weakSelf.recordFormat.channelCount * [weakSelf bytesOfCommonFormat:weakSelf.recordFormat.commonFormat];
         OSStatus status = AudioFileWriteBytes(weakSelf.recordFileID, NO, inStartingByte, &length, convertedBuffer.int16ChannelData[0]);
         assert(status == noErr);
-        if (status != noErr)
+        if (status != noErr){
+            [self stopRecord];
+            [self writeError:@"文件写入失败"];
             return;
+        }
         
         
         // 总写入字节数
@@ -218,9 +259,17 @@
     
     // 启动引擎
     BOOL result = [self.audioEngine startAndReturnError:&error];
-    assert(error == nil);
-    assert(result);
-    
+    assert(error == nil && result);
+    if (error != nil || !result) {
+        [self stopRecord];
+        if (error) {
+            [self writeError:error.localizedFailureReason];
+        }else{
+            [self writeError:@"启动录音引擎失败"];
+        }
+        
+        return NO;
+    }
     
     // 开始播放
     if (bgmFile && startFrame < [bgmFile length]) {
@@ -230,6 +279,8 @@
     
     // 检测是否插入耳机
     self.recordWithHeadphone = [JYAudioRecorder detectingHeadphones];
+    
+    return YES;
 }
 
 -(void)stopRecord{
@@ -265,40 +316,57 @@
 
 
 #pragma  mark -
--(void)play{
-    [self playAtTime:0];
+-(BOOL)play{
+    return [self playAtTime:0];
 }
 
--(void)playAtTime:(NSTimeInterval)time{
+-(BOOL)playAtTime:(NSTimeInterval)time{
         
     if (time > self.recordDuration) {
-        return;
+        return NO;
     }
     
     if (self.isRec) {
-        return;
+        return NO;
     }
 
     if (self.recordFilePath == nil) {
-        return;
+        return NO;
     }
+    
+    self.error = nil;
     
     if (!self.isPlaying) {
         NSError *error;
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
         assert(error == nil);
+        if (error) {
+            [self writeError:error.localizedFailureReason];
+            return NO;
+        }
 
         [[AVAudioSession sharedInstance] setActive:YES error:&error];
         assert(error == nil);
-        
+        if (error) {
+            [self writeError:error.localizedFailureReason];
+            return NO;
+        }
         
         self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.recordFilePath] error:&error];
         assert(error == nil);
+        if (error) {
+            [self writeError:error.localizedFailureReason];
+            return NO;
+        }
         
         self.bgmPlayer = nil;
         if (self.bgmPath && self.recordWithHeadphone) {
             self.bgmPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.bgmPath] error:&error];
             assert(error == nil);
+            if (error) {
+                [self writeError:error.localizedFailureReason];
+                return NO;
+            }
         }
         
         self.audioPlayer.delegate = self;
@@ -324,6 +392,8 @@
     
     self.isPlaying = YES;
     [self startTimer];
+    
+    return YES;
 }
 
 -(void)pausePlay{
@@ -366,6 +436,7 @@
         [self stopTimer];
     }
 }
+
 
 #pragma mark - get/set
 -(void)setIsRec:(BOOL)isRec{
@@ -491,7 +562,7 @@
 }
 
 #pragma mark - public
-- (void)truncateFile:(NSTimeInterval)time {
+- (BOOL)truncateFile:(NSTimeInterval)time {
     
     // 不能大于录制时间
     time = MIN(time, self.recordDuration);
@@ -504,18 +575,26 @@
     UInt32 truncateByte = ((UInt32)(time * self.recordFormat.sampleRate * bytePreFrame)) / bytePreFrame * bytePreFrame;
     
     // 截断
-    [self truncateFileForFormat:self.recordFormat truncateByte:truncateByte];
+    BOOL ret = [self truncateFileForFormat:self.recordFormat truncateByte:truncateByte];
+    if (!ret) {
+        return NO;
+    }
     
     // 重新设置录制时间
     self.recordDuration = time;
+    
+    return YES;
 }
 
 #pragma mark - help
 
-- (void)truncateFileForFormat:(AVAudioFormat *)format truncateByte:(UInt32)truncateByte {
+- (BOOL)truncateFileForFormat:(AVAudioFormat *)format truncateByte:(UInt32)truncateByte {
     OSStatus stats = AudioFileOpenURL((__bridge CFURLRef)[NSURL fileURLWithPath:self.recordFilePath], kAudioFileReadPermission, kAudioFileWAVEType, &_recordFileID);
     assert(stats==0);
-    
+    if (stats != 0) {
+        [self writeError:@"打开录音文件失败"];
+        return NO;
+    }
     
     // 临时创建一个文件
     AudioFileID tmpfileid;
@@ -524,7 +603,10 @@
     NSString *tmpFilePath = [dir stringByAppendingString:@"/recording_tempfile.wav"];
     stats = AudioFileCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:tmpFilePath], kAudioFileWAVEType, format.streamDescription, kAudioFileFlags_EraseFile, &tmpfileid);
     assert(stats==0);
-    
+    if (stats != 0) {
+        [self writeError:@"创建临时文件失败"];
+        return NO;
+    }
     
     // 如果一次性缓存太多，会闪退
     const int bytesPreLoop = 32000*5; // 每次拷贝字节数
@@ -550,10 +632,20 @@
     NSFileManager *fileManager = [NSFileManager defaultManager];
     [fileManager removeItemAtPath:self.recordFilePath error:&err];
     assert(err==nil);
+    if (err) {
+        [self writeError:@"删除文件失败"];
+        return NO;
+    }
     
     //移动文件
     [fileManager moveItemAtPath:tmpFilePath toPath:self.recordFilePath error:&err];
     assert(err==nil);
+    if (err) {
+        [self writeError:@"移动文件失败"];
+        return NO;
+    }
+    
+    return YES;
     
 }
 
@@ -657,6 +749,12 @@
     return NO;
 }
 
+
+/// 设置错误信息
+/// @param msg 具体错误信息
+-(void)writeError:(NSString *)msg{
+    self.error = [NSError errorWithDomain:@"JYAudioRecorderError" code:-1 userInfo:@{NSLocalizedDescriptionKey : msg ? msg : @""}];
+}
 
 #pragma mark -
 -(void)dealloc{

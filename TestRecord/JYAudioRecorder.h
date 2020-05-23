@@ -81,21 +81,23 @@ typedef NS_ENUM(NSInteger, JYAudioRecorderState) {
 
 @property(atomic,weak)id<JYAudioRecorderDelegate> delegate;
 
+@property(readonly, nonatomic,strong,nullable)NSError *error; //发生错误后，从这里获取错误信息
+
 // 从头开始录音
--(void)startRecord;
+-(BOOL)startRecord;
 
 // 从某个时间点往后继续录音
--(void)startRecordAtTime:(NSTimeInterval)time;
+-(BOOL)startRecordAtTime:(NSTimeInterval)time;
 
 // 停止录音
 -(void)stopRecord;
 
 #pragma mark -
 // 播放录音
--(void)play;
+-(BOOL)play;
 
 // 从某个时间点往后继续播放
--(void)playAtTime:(NSTimeInterval)time;
+-(BOOL)playAtTime:(NSTimeInterval)time;
 
 // 停止播放录音
 -(void)stopPlay;
@@ -107,7 +109,7 @@ typedef NS_ENUM(NSInteger, JYAudioRecorderState) {
 -(void)resumePlay;
 
 // 截断已录制的音频
-- (void)truncateFile:(NSTimeInterval)time;
+- (BOOL)truncateFile:(NSTimeInterval)time;
 
 #pragma mark -
 // 给背景音加的延迟秒数
