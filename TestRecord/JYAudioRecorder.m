@@ -292,13 +292,12 @@
             [self.audioEngine disconnectNodeInput:self.audioPlayerNode];
             [self.audioEngine disconnectNodeOutput:self.audioPlayerNode];
             [self.audioEngine disconnectNodeOutput:self.audioEngine.inputNode];
+            [self.audioEngine detachNode:self.audioPlayerNode];
         } @catch (NSException *exception) {
             NSLog(@"%@",exception);
         }
         
-        [self.audioEngine detachNode:self.audioPlayerNode];
         self.audioPlayerNode = nil;
-        
         
         [self.audioEngine stop];
         [self.audioEngine.inputNode removeTapOnBus:0];
