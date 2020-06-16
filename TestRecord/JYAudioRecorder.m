@@ -9,7 +9,6 @@
 #import "JYAudioRecorder.h"
 #import <UIKit/UIKit.h>
 #import "noise_suppression.h"
-#import "DeviceUtil/DeviceUtil.h"
 
 void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int samplecount);
 
@@ -47,22 +46,13 @@ void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int s
 
 @implementation JYAudioRecorder
 
--(instancetype)init{
+-(instancetype)initWithSampleRate:(int)sampleRate{
     self = [super init];
     if (self) {
         
         self.bgmVolume = 1.0;
         
-        // iphone11机型，采样率低的话，会有噼里啪啦的杂音
-        int sample = 16000;
-        DeviceUtil *deviceUtil = [[DeviceUtil alloc] init];
-        if ([deviceUtil hardware] == IPHONE_11 ||
-            [deviceUtil hardware] == IPHONE_11_PRO ||
-            [deviceUtil hardware] == IPHONE_11_PRO_MAX) {
-            sample = 44100;
-        }
-        
-        self.recordFormat = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:sample channels:1 interleaved:true];
+        self.recordFormat = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:sampleRate channels:1 interleaved:true];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterruptionNotification:) name:AVAudioSessionInterruptionNotification object:nil];
     }

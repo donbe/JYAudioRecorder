@@ -83,6 +83,11 @@ typedef NS_ENUM(NSInteger, JYAudioRecorderState) {
 
 @property(readonly, nonatomic,strong,nullable)NSError *error; //发生错误后，从这里获取错误信息
 
+
+/// 初始化
+/// @param sampleRate 采样率，只有16000采样率会有降噪效果
+-(instancetype)initWithSampleRate:(int)sampleRate;
+
 // 从头开始录音
 -(BOOL)startRecord;
 

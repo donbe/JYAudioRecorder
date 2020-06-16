@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "JYAudioRecorder.h"
 #import <AVFoundation/AVFoundation.h>
-
+#import "DeviceUtil/DeviceUtil.h"
 
 //参数为数据，采样个数
 static int simpleCalculate_DB(short* pcmData, long long sample)
@@ -134,7 +134,16 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
 #pragma mark -
 -(JYAudioRecorder *)recorder{
     if (_recorder == nil) {
-        _recorder = [JYAudioRecorder new];
+        // iphone11机型，采样率低的话，会有噼里啪啦的杂音
+        int sample = 16000;
+        DeviceUtil *deviceUtil = [[DeviceUtil alloc] init];
+        if ([deviceUtil hardware] == IPHONE_11 ||
+            [deviceUtil hardware] == IPHONE_11_PRO ||
+            [deviceUtil hardware] == IPHONE_11_PRO_MAX) {
+            sample = 44100;
+        }
+        
+        _recorder = [[JYAudioRecorder alloc] initWithSampleRate:sample];
         _recorder.delegate = self;
     }
     return _recorder;
