@@ -51,6 +51,8 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.view.backgroundColor = [UIColor whiteColor];
+    
     // 请求授权
     if ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio] != AVAuthorizationStatusAuthorized) {
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
@@ -134,7 +136,7 @@ static int simpleCalculate_DB(short* pcmData, long long sample)
 #pragma mark -
 -(JYAudioRecorder *)recorder{
     if (_recorder == nil) {
-        // iphone11机型，采样率低的话，会有噼里啪啦的杂音
+        // iphone11机型，采样率低的话，会有电流声
         int sample = 16000;
         DeviceUtil *deviceUtil = [[DeviceUtil alloc] init];
         if ([deviceUtil hardware] == IPHONE_11 ||
