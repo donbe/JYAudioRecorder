@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2EC6D35DBEA2BF78D4093056 /* Pods_TestRecord_TestRecordUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DC9B2664548D09F2B0283E /* Pods_TestRecord_TestRecordUITests.framework */; };
 		360817B4244A9B3B00916438 /* output.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 360817B3244A9B3B00916438 /* output.mp3 */; };
 		36E0DB72244547B000C2AF11 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E0DB71244547B000C2AF11 /* AppDelegate.m */; };
 		36E0DB75244547B000C2AF11 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E0DB74244547B000C2AF11 /* SceneDelegate.m */; };
@@ -19,6 +20,20 @@
 		36E0DB98244547B400C2AF11 /* TestRecordUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E0DB97244547B400C2AF11 /* TestRecordUITests.m */; };
 		36E0DBA9244548A100C2AF11 /* JYAudioRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E0DBA8244548A100C2AF11 /* JYAudioRecorder.m */; };
 		36E0DBAB24454A1300C2AF11 /* 1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 36E0DBAA24454A1300C2AF11 /* 1.mp3 */; };
+		36E6CA1B2498CC7F00D8D59F /* downsample_fast.c in Sources */ = {isa = PBXBuildFile; fileRef = 36E6CA012498CC7F00D8D59F /* downsample_fast.c */; };
+		36E6CA1C2498CC7F00D8D59F /* splitting_filter.c in Sources */ = {isa = PBXBuildFile; fileRef = 36E6CA022498CC7F00D8D59F /* splitting_filter.c */; };
+		36E6CA1D2498CC7F00D8D59F /* fft4g.c in Sources */ = {isa = PBXBuildFile; fileRef = 36E6CA032498CC7F00D8D59F /* fft4g.c */; };
+		36E6CA1E2498CC7F00D8D59F /* division_operations.c in Sources */ = {isa = PBXBuildFile; fileRef = 36E6CA062498CC7F00D8D59F /* division_operations.c */; };
+		36E6CA1F2498CC7F00D8D59F /* ns_core.c in Sources */ = {isa = PBXBuildFile; fileRef = 36E6CA0D2498CC7F00D8D59F /* ns_core.c */; };
+		36E6CA202498CC7F00D8D59F /* analog_agc.c in Sources */ = {isa = PBXBuildFile; fileRef = 36E6CA122498CC7F00D8D59F /* analog_agc.c */; };
+		36E6CA212498CC7F00D8D59F /* noise_suppression.c in Sources */ = {isa = PBXBuildFile; fileRef = 36E6CA142498CC7F00D8D59F /* noise_suppression.c */; };
+		36E6CA222498CC7F00D8D59F /* dot_product_with_scale.c in Sources */ = {isa = PBXBuildFile; fileRef = 36E6CA152498CC7F00D8D59F /* dot_product_with_scale.c */; };
+		36E6CA232498CC7F00D8D59F /* digital_agc.c in Sources */ = {isa = PBXBuildFile; fileRef = 36E6CA162498CC7F00D8D59F /* digital_agc.c */; };
+		36E6CA242498CC7F00D8D59F /* copy_set_operations.c in Sources */ = {isa = PBXBuildFile; fileRef = 36E6CA182498CC7F00D8D59F /* copy_set_operations.c */; };
+		36E6CA252498CC7F00D8D59F /* resample_by_2.c in Sources */ = {isa = PBXBuildFile; fileRef = 36E6CA192498CC7F00D8D59F /* resample_by_2.c */; };
+		36E6CA262498CC7F00D8D59F /* spl_sqrt.c in Sources */ = {isa = PBXBuildFile; fileRef = 36E6CA1A2498CC7F00D8D59F /* spl_sqrt.c */; };
+		C518D68E13FF774A655ACAAC /* Pods_TestRecord.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D7A0529E0B5B1100C8EEA32 /* Pods_TestRecord.framework */; };
+		E566EE1AC6A413BED48824CA /* Pods_TestRecordTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE6A94EA486FCE53598CB6BD /* Pods_TestRecordTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +54,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		12C5D98AE85EC4FCFE57CA7A /* Pods-TestRecord.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestRecord.release.xcconfig"; path = "Target Support Files/Pods-TestRecord/Pods-TestRecord.release.xcconfig"; sourceTree = "<group>"; };
+		2A7793D2A595F4A96D4E3210 /* Pods-TestRecord-TestRecordUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestRecord-TestRecordUITests.debug.xcconfig"; path = "Target Support Files/Pods-TestRecord-TestRecordUITests/Pods-TestRecord-TestRecordUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		360817B3244A9B3B00916438 /* output.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = output.mp3; sourceTree = "<group>"; };
 		36E0DB6D244547B000C2AF11 /* TestRecord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestRecord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		36E0DB70244547B000C2AF11 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -61,6 +78,42 @@
 		36E0DBA7244548A000C2AF11 /* JYAudioRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYAudioRecorder.h; sourceTree = "<group>"; };
 		36E0DBA8244548A100C2AF11 /* JYAudioRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYAudioRecorder.m; sourceTree = "<group>"; };
 		36E0DBAA24454A1300C2AF11 /* 1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = 1.mp3; sourceTree = "<group>"; };
+		36E6C9FE2498CC7F00D8D59F /* ns_core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ns_core.h; sourceTree = "<group>"; };
+		36E6C9FF2498CC7F00D8D59F /* signal_processing_library.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = signal_processing_library.h; sourceTree = "<group>"; };
+		36E6CA002498CC7F00D8D59F /* typedefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = typedefs.h; sourceTree = "<group>"; };
+		36E6CA012498CC7F00D8D59F /* downsample_fast.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = downsample_fast.c; sourceTree = "<group>"; };
+		36E6CA022498CC7F00D8D59F /* splitting_filter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = splitting_filter.c; sourceTree = "<group>"; };
+		36E6CA032498CC7F00D8D59F /* fft4g.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fft4g.c; sourceTree = "<group>"; };
+		36E6CA042498CC7F00D8D59F /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		36E6CA052498CC7F00D8D59F /* real_fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = real_fft.h; sourceTree = "<group>"; };
+		36E6CA062498CC7F00D8D59F /* division_operations.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = division_operations.c; sourceTree = "<group>"; };
+		36E6CA072498CC7F00D8D59F /* analog_agc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = analog_agc.h; sourceTree = "<group>"; };
+		36E6CA082498CC7F00D8D59F /* gain_control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gain_control.h; sourceTree = "<group>"; };
+		36E6CA092498CC7F00D8D59F /* spl_inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spl_inl.h; sourceTree = "<group>"; };
+		36E6CA0A2498CC7F00D8D59F /* digital_agc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = digital_agc.h; sourceTree = "<group>"; };
+		36E6CA0B2498CC7F00D8D59F /* defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = defines.h; sourceTree = "<group>"; };
+		36E6CA0C2498CC7F00D8D59F /* noise_suppression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = noise_suppression.h; sourceTree = "<group>"; };
+		36E6CA0D2498CC7F00D8D59F /* ns_core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ns_core.c; sourceTree = "<group>"; };
+		36E6CA0E2498CC7F00D8D59F /* cpu_features_wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cpu_features_wrapper.h; sourceTree = "<group>"; };
+		36E6CA0F2498CC7F00D8D59F /* fft4g.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fft4g.h; sourceTree = "<group>"; };
+		36E6CA102498CC7F00D8D59F /* spl_inl_mips.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spl_inl_mips.h; sourceTree = "<group>"; };
+		36E6CA112498CC7F00D8D59F /* windows_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = windows_private.h; sourceTree = "<group>"; };
+		36E6CA122498CC7F00D8D59F /* analog_agc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = analog_agc.c; sourceTree = "<group>"; };
+		36E6CA132498CC7F00D8D59F /* _android_log_print.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _android_log_print.h; sourceTree = "<group>"; };
+		36E6CA142498CC7F00D8D59F /* noise_suppression.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = noise_suppression.c; sourceTree = "<group>"; };
+		36E6CA152498CC7F00D8D59F /* dot_product_with_scale.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dot_product_with_scale.c; sourceTree = "<group>"; };
+		36E6CA162498CC7F00D8D59F /* digital_agc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = digital_agc.c; sourceTree = "<group>"; };
+		36E6CA172498CC7F00D8D59F /* spl_inl_armv7.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spl_inl_armv7.h; sourceTree = "<group>"; };
+		36E6CA182498CC7F00D8D59F /* copy_set_operations.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = copy_set_operations.c; sourceTree = "<group>"; };
+		36E6CA192498CC7F00D8D59F /* resample_by_2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = resample_by_2.c; sourceTree = "<group>"; };
+		36E6CA1A2498CC7F00D8D59F /* spl_sqrt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spl_sqrt.c; sourceTree = "<group>"; };
+		3C972EA725D08FDF72D79E68 /* Pods-TestRecordTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestRecordTests.release.xcconfig"; path = "Target Support Files/Pods-TestRecordTests/Pods-TestRecordTests.release.xcconfig"; sourceTree = "<group>"; };
+		52DC9B2664548D09F2B0283E /* Pods_TestRecord_TestRecordUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestRecord_TestRecordUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		70AAEDEB732366390106DF55 /* Pods-TestRecord-TestRecordUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestRecord-TestRecordUITests.release.xcconfig"; path = "Target Support Files/Pods-TestRecord-TestRecordUITests/Pods-TestRecord-TestRecordUITests.release.xcconfig"; sourceTree = "<group>"; };
+		7D7A0529E0B5B1100C8EEA32 /* Pods_TestRecord.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestRecord.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FA5E6D52F63AF9FFBCB254B /* Pods-TestRecord.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestRecord.debug.xcconfig"; path = "Target Support Files/Pods-TestRecord/Pods-TestRecord.debug.xcconfig"; sourceTree = "<group>"; };
+		AE6A94EA486FCE53598CB6BD /* Pods_TestRecordTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestRecordTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CBAFC0F4AFE9511341AA20C3 /* Pods-TestRecordTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestRecordTests.debug.xcconfig"; path = "Target Support Files/Pods-TestRecordTests/Pods-TestRecordTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +121,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C518D68E13FF774A655ACAAC /* Pods_TestRecord.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,6 +129,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E566EE1AC6A413BED48824CA /* Pods_TestRecordTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +137,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2EC6D35DBEA2BF78D4093056 /* Pods_TestRecord_TestRecordUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,6 +151,8 @@
 				36E0DB8B244547B400C2AF11 /* TestRecordTests */,
 				36E0DB96244547B400C2AF11 /* TestRecordUITests */,
 				36E0DB6E244547B000C2AF11 /* Products */,
+				75BC620366F60B3084B206AD /* Pods */,
+				BAA33F6126A5498EB211177B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -111,6 +169,7 @@
 		36E0DB6F244547B000C2AF11 /* TestRecord */ = {
 			isa = PBXGroup;
 			children = (
+				36E6C9FD2498CC7F00D8D59F /* wrtc */,
 				36E0DBAA24454A1300C2AF11 /* 1.mp3 */,
 				360817B3244A9B3B00916438 /* output.mp3 */,
 				36E0DBA7244548A000C2AF11 /* JYAudioRecorder.h */,
@@ -148,6 +207,66 @@
 			path = TestRecordUITests;
 			sourceTree = "<group>";
 		};
+		36E6C9FD2498CC7F00D8D59F /* wrtc */ = {
+			isa = PBXGroup;
+			children = (
+				36E6C9FE2498CC7F00D8D59F /* ns_core.h */,
+				36E6C9FF2498CC7F00D8D59F /* signal_processing_library.h */,
+				36E6CA002498CC7F00D8D59F /* typedefs.h */,
+				36E6CA012498CC7F00D8D59F /* downsample_fast.c */,
+				36E6CA022498CC7F00D8D59F /* splitting_filter.c */,
+				36E6CA032498CC7F00D8D59F /* fft4g.c */,
+				36E6CA042498CC7F00D8D59F /* config.h */,
+				36E6CA052498CC7F00D8D59F /* real_fft.h */,
+				36E6CA062498CC7F00D8D59F /* division_operations.c */,
+				36E6CA072498CC7F00D8D59F /* analog_agc.h */,
+				36E6CA082498CC7F00D8D59F /* gain_control.h */,
+				36E6CA092498CC7F00D8D59F /* spl_inl.h */,
+				36E6CA0A2498CC7F00D8D59F /* digital_agc.h */,
+				36E6CA0B2498CC7F00D8D59F /* defines.h */,
+				36E6CA0C2498CC7F00D8D59F /* noise_suppression.h */,
+				36E6CA0D2498CC7F00D8D59F /* ns_core.c */,
+				36E6CA0E2498CC7F00D8D59F /* cpu_features_wrapper.h */,
+				36E6CA0F2498CC7F00D8D59F /* fft4g.h */,
+				36E6CA102498CC7F00D8D59F /* spl_inl_mips.h */,
+				36E6CA112498CC7F00D8D59F /* windows_private.h */,
+				36E6CA122498CC7F00D8D59F /* analog_agc.c */,
+				36E6CA132498CC7F00D8D59F /* _android_log_print.h */,
+				36E6CA142498CC7F00D8D59F /* noise_suppression.c */,
+				36E6CA152498CC7F00D8D59F /* dot_product_with_scale.c */,
+				36E6CA162498CC7F00D8D59F /* digital_agc.c */,
+				36E6CA172498CC7F00D8D59F /* spl_inl_armv7.h */,
+				36E6CA182498CC7F00D8D59F /* copy_set_operations.c */,
+				36E6CA192498CC7F00D8D59F /* resample_by_2.c */,
+				36E6CA1A2498CC7F00D8D59F /* spl_sqrt.c */,
+			);
+			path = wrtc;
+			sourceTree = "<group>";
+		};
+		75BC620366F60B3084B206AD /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				7FA5E6D52F63AF9FFBCB254B /* Pods-TestRecord.debug.xcconfig */,
+				12C5D98AE85EC4FCFE57CA7A /* Pods-TestRecord.release.xcconfig */,
+				2A7793D2A595F4A96D4E3210 /* Pods-TestRecord-TestRecordUITests.debug.xcconfig */,
+				70AAEDEB732366390106DF55 /* Pods-TestRecord-TestRecordUITests.release.xcconfig */,
+				CBAFC0F4AFE9511341AA20C3 /* Pods-TestRecordTests.debug.xcconfig */,
+				3C972EA725D08FDF72D79E68 /* Pods-TestRecordTests.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		BAA33F6126A5498EB211177B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7D7A0529E0B5B1100C8EEA32 /* Pods_TestRecord.framework */,
+				52DC9B2664548D09F2B0283E /* Pods_TestRecord_TestRecordUITests.framework */,
+				AE6A94EA486FCE53598CB6BD /* Pods_TestRecordTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -155,9 +274,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 36E0DB9C244547B400C2AF11 /* Build configuration list for PBXNativeTarget "TestRecord" */;
 			buildPhases = (
+				A35D31BA9A01B44FB5BBE720 /* [CP] Check Pods Manifest.lock */,
 				36E0DB69244547B000C2AF11 /* Sources */,
 				36E0DB6A244547B000C2AF11 /* Frameworks */,
 				36E0DB6B244547B000C2AF11 /* Resources */,
+				1EC35075ED5836E3A1849174 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -172,6 +293,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 36E0DB9F244547B400C2AF11 /* Build configuration list for PBXNativeTarget "TestRecordTests" */;
 			buildPhases = (
+				8EF436D76091BF45214DC789 /* [CP] Check Pods Manifest.lock */,
 				36E0DB84244547B400C2AF11 /* Sources */,
 				36E0DB85244547B400C2AF11 /* Frameworks */,
 				36E0DB86244547B400C2AF11 /* Resources */,
@@ -190,9 +312,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 36E0DBA2244547B400C2AF11 /* Build configuration list for PBXNativeTarget "TestRecordUITests" */;
 			buildPhases = (
+				4F7DE5ACCA9FC41989EEF6E4 /* [CP] Check Pods Manifest.lock */,
 				36E0DB8F244547B400C2AF11 /* Sources */,
 				36E0DB90244547B400C2AF11 /* Frameworks */,
 				36E0DB91244547B400C2AF11 /* Resources */,
+				136771F1B200A9C8D2FC72B8 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -275,16 +399,131 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		136771F1B200A9C8D2FC72B8 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TestRecord-TestRecordUITests/Pods-TestRecord-TestRecordUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TestRecord-TestRecordUITests/Pods-TestRecord-TestRecordUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TestRecord-TestRecordUITests/Pods-TestRecord-TestRecordUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		1EC35075ED5836E3A1849174 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TestRecord/Pods-TestRecord-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TestRecord/Pods-TestRecord-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TestRecord/Pods-TestRecord-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4F7DE5ACCA9FC41989EEF6E4 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-TestRecord-TestRecordUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8EF436D76091BF45214DC789 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-TestRecordTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A35D31BA9A01B44FB5BBE720 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-TestRecord-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		36E0DB69244547B000C2AF11 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				36E6CA202498CC7F00D8D59F /* analog_agc.c in Sources */,
 				36E0DB78244547B000C2AF11 /* ViewController.m in Sources */,
+				36E6CA232498CC7F00D8D59F /* digital_agc.c in Sources */,
+				36E6CA1B2498CC7F00D8D59F /* downsample_fast.c in Sources */,
+				36E6CA252498CC7F00D8D59F /* resample_by_2.c in Sources */,
+				36E6CA242498CC7F00D8D59F /* copy_set_operations.c in Sources */,
 				36E0DB72244547B000C2AF11 /* AppDelegate.m in Sources */,
+				36E6CA1D2498CC7F00D8D59F /* fft4g.c in Sources */,
+				36E6CA222498CC7F00D8D59F /* dot_product_with_scale.c in Sources */,
 				36E0DBA9244548A100C2AF11 /* JYAudioRecorder.m in Sources */,
 				36E0DB83244547B400C2AF11 /* main.m in Sources */,
+				36E6CA1C2498CC7F00D8D59F /* splitting_filter.c in Sources */,
+				36E6CA212498CC7F00D8D59F /* noise_suppression.c in Sources */,
+				36E6CA262498CC7F00D8D59F /* spl_sqrt.c in Sources */,
+				36E6CA1F2498CC7F00D8D59F /* ns_core.c in Sources */,
 				36E0DB75244547B000C2AF11 /* SceneDelegate.m in Sources */,
+				36E6CA1E2498CC7F00D8D59F /* division_operations.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -451,16 +690,20 @@
 		};
 		36E0DB9D244547B400C2AF11 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7FA5E6D52F63AF9FFBCB254B /* Pods-TestRecord.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = J238R6UW9K;
+				DEVELOPMENT_TEAM = KLKRN5VX8U;
+				GCC_INPUT_FILETYPE = automatic;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = TestRecord/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.donbe.TestRecord;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -469,16 +712,20 @@
 		};
 		36E0DB9E244547B400C2AF11 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 12C5D98AE85EC4FCFE57CA7A /* Pods-TestRecord.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = J238R6UW9K;
+				DEVELOPMENT_TEAM = KLKRN5VX8U;
+				GCC_INPUT_FILETYPE = automatic;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = TestRecord/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.donbe.TestRecord;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -487,6 +734,7 @@
 		};
 		36E0DBA0244547B400C2AF11 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CBAFC0F4AFE9511341AA20C3 /* Pods-TestRecordTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -507,6 +755,7 @@
 		};
 		36E0DBA1244547B400C2AF11 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3C972EA725D08FDF72D79E68 /* Pods-TestRecordTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -527,6 +776,7 @@
 		};
 		36E0DBA3244547B400C2AF11 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A7793D2A595F4A96D4E3210 /* Pods-TestRecord-TestRecordUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DXU7P74W58;
@@ -545,6 +795,7 @@
 		};
 		36E0DBA4244547B400C2AF11 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 70AAEDEB732366390106DF55 /* Pods-TestRecord-TestRecordUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DXU7P74W58;

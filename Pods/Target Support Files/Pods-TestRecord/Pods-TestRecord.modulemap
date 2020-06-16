@@ -1,0 +1,6 @@
+framework module Pods_TestRecord {
+  umbrella header "Pods-TestRecord-umbrella.h"
+
+  export *
+  module * { export * }
+}

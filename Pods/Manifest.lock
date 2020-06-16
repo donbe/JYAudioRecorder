@@ -1,0 +1,16 @@
+PODS:
+  - DeviceUtil (6.1.5)
+
+DEPENDENCIES:
+  - DeviceUtil
+
+SPEC REPOS:
+  trunk:
+    - DeviceUtil
+
+SPEC CHECKSUMS:
+  DeviceUtil: f523081e3496cf5d64464237e2299c95c15264b1
+
+PODFILE CHECKSUM: 00e9210fe454ff5cac90fca84858ae65e930c15c
+
+COCOAPODS: 1.8.4

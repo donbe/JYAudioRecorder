@@ -8,9 +8,17 @@
 
 #import "JYAudioRecorder.h"
 #import <UIKit/UIKit.h>
+#import "noise_suppression.h"
+#import "DeviceUtil/DeviceUtil.h"
+
+void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int samplecount);
+
 
 @interface JYAudioRecorder()<AVAudioPlayerDelegate>
-
+{
+    NsHandle * nsHandle; // 降噪句柄
+    
+}
 @property(nonatomic,strong)AVAudioEngine *audioEngine;
 @property(nonatomic,strong)AVAudioPlayerNode *audioPlayerNode;
 
@@ -45,7 +53,16 @@
         
         self.bgmVolume = 1.0;
         
-        self.recordFormat = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:44100 channels:1 interleaved:true];;
+        // iphone11机型，采样率低的话，会有噼里啪啦的杂音
+        int sample = 16000;
+        DeviceUtil *deviceUtil = [[DeviceUtil alloc] init];
+        if ([deviceUtil hardware] == IPHONE_11 ||
+            [deviceUtil hardware] == IPHONE_11_PRO ||
+            [deviceUtil hardware] == IPHONE_11_PRO_MAX) {
+            sample = 44100;
+        }
+        
+        self.recordFormat = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:sample channels:1 interleaved:true];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterruptionNotification:) name:AVAudioSessionInterruptionNotification object:nil];
     }
@@ -159,6 +176,12 @@
 
     self.isRec = YES;
     
+    
+    // 初始化降噪
+    WebRtcNs_Create(&nsHandle);
+    WebRtcNs_Init(nsHandle, self.recordFormat.sampleRate);
+    
+    
     // 安装tap
     __block SInt64 inStartingByte = truncateByte;
     __weak JYAudioRecorder *weakSelf = self;
@@ -199,17 +222,18 @@
         buffer.frameLength = buffer.frameLength/2;
         convertedBuffer.frameLength = convertedBuffer.frameLength/2;
         
+        // 降噪处理
+        webRtcNS(self->nsHandle,weakSelf.recordFormat.sampleRate,convertedBuffer.int16ChannelData[0], convertedBuffer.frameLength);
         
         // 写文件
         UInt32 length = convertedBuffer.frameLength * weakSelf.recordFormat.channelCount * [weakSelf bytesOfCommonFormat:weakSelf.recordFormat.commonFormat];
-        OSStatus status = AudioFileWriteBytes(weakSelf.recordFileID, NO, inStartingByte, &length, convertedBuffer.int16ChannelData[0]);
+        int status = AudioFileWriteBytes(weakSelf.recordFileID, NO, inStartingByte, &length, convertedBuffer.int16ChannelData[0]);
         assert(status == noErr);
         if (status != noErr){
             [self stopRecord];
             [self writeError:@"文件写入失败"];
             return;
         }
-        
         
         // 总写入字节数
         inStartingByte += length;
@@ -303,6 +327,7 @@
         [self.audioEngine.inputNode removeTapOnBus:0];
         self.audioEngine = nil;
         
+        WebRtcNs_Free(nsHandle);
         
         AudioFileClose(self.recordFileID);
         self.recordFileID = nil;
@@ -765,4 +790,32 @@
 +(NSTimeInterval)bgmLatency{
     return [self isIphoneX] ? 0.17 : 0.20;
 }
+
 @end
+
+
+
+/// 降噪处理，采样率必须是16000，in place方式
+/// @param handle 处理句柄
+/// @param samplerate 采样率
+/// @param samples 样本
+/// @param samplecount 样本数
+void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int samplecount){
+    
+    if (samplerate != 16000) return;
+    
+    for (int i = 0; i < samplecount; i += 160) {
+       
+       short shBufferIn[160] = {0};
+       short shBufferOut[160] = {0};
+       
+       memcpy(shBufferIn, (char*)(samples + i), 160 * sizeof(short));
+       
+       if (0 != WebRtcNs_Process(handle, shBufferIn, NULL, shBufferOut, NULL)) {
+           assert(0);
+       }else{
+           memcpy(samples + i, shBufferOut, 160 * sizeof(short));
+       }
+        
+   }
+}
