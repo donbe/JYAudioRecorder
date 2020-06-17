@@ -36,7 +36,7 @@ void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int s
 @property(nonatomic,readwrite)BOOL isPlaying; //播放状态
 @property(nonatomic,readwrite)JYAudioRecorderState state; //播放器状态
 
-@property(nonatomic,readwrite)BOOL recordWithHeadphone; //是否使用了有线耳机录制
+@property(nonatomic,readwrite)BOOL recordWithHeadphone; //录音时，是否使用了有线耳机录制
 
 @property(nonatomic,strong,nullable)NSError *error; //发生错误后，从这里获取错误信息
 
@@ -378,7 +378,7 @@ void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int s
         }
         
         self.bgmPlayer = nil;
-        if (self.bgmPath && self.recordWithHeadphone) {
+        if (self.bgmPath) {
             self.bgmPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:self.bgmPath] error:&error];
             assert(error == nil);
             if (error) {

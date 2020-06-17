@@ -71,7 +71,7 @@ typedef NS_ENUM(NSInteger, JYAudioRecorderState) {
 @property(nonatomic,readonly)BOOL isRec; //录制状态
 @property(nonatomic,readonly)BOOL isPlaying; //播放状态
 @property(nonatomic,readonly)JYAudioRecorderState state; //播放器状态
-@property(nonatomic,readonly)BOOL recordWithHeadphone; //是否使用了有线耳机录制
+@property(nonatomic,readonly)BOOL recordWithHeadphone; //录音时，是否使用了有线耳机录制
 
 
 @property(nonatomic,readonly)NSTimeInterval recordDuration; //录制时长
