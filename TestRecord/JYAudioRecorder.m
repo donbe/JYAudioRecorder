@@ -116,9 +116,6 @@ void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int s
         }
     }
     
-    // 设置录音文件地址
-    NSString *dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-    self.recordFilePath = [dir stringByAppendingString:@"/recording_file_200422.wav"];
     
     
     // 继续录音的情况，计算从多少byte开始截断,并且确保截断不会截断在一个帧的中间
@@ -225,6 +222,7 @@ void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int s
             return;
         }
         
+        
         // 总写入字节数
         inStartingByte += length;
         
@@ -328,8 +326,14 @@ void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int s
     }
 }
 
+// 这是一个默认的
+- (NSString *)recordFilePath {
+    NSString *dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    return [dir stringByAppendingString:@"/recording_file_200422.wav"];
+}
 
 #pragma  mark -
+
 -(BOOL)play{
     return [self playAtTime:0];
 }
