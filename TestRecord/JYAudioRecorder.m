@@ -31,6 +31,7 @@ void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int s
 
 @property(nonatomic,weak)NSTimer *playTimer;
 
+@property(nonatomic,readwrite)NSTimeInterval recordDuration;
 @property(nonatomic,readwrite)BOOL isRec; //录制状态
 @property(nonatomic,readwrite)BOOL isPlaying; //播放状态
 @property(nonatomic,readwrite)JYAudioRecorderState state; //播放器状态
