@@ -31,7 +31,6 @@ void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int s
 
 @property(nonatomic,weak)NSTimer *playTimer;
 
-@property(nonatomic,readwrite)NSTimeInterval recordDuration; //录制时长
 @property(nonatomic,readwrite)BOOL isRec; //录制状态
 @property(nonatomic,readwrite)BOOL isPlaying; //播放状态
 @property(nonatomic,readwrite)JYAudioRecorderState state; //播放器状态
@@ -298,12 +297,12 @@ void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int s
 -(void)stopRecord{
     if (self.isRec) {
         
-        [self.audioPlayerNode stop];
+        [self.audioEngine disconnectNodeOutput:self.audioEngine.inputNode];
         
         @try { // 避免因为之前没有connect node导致的闪退
+            [self.audioPlayerNode stop];
             [self.audioEngine disconnectNodeInput:self.audioPlayerNode];
             [self.audioEngine disconnectNodeOutput:self.audioPlayerNode];
-            [self.audioEngine disconnectNodeOutput:self.audioEngine.inputNode];
             [self.audioEngine detachNode:self.audioPlayerNode];
         } @catch (NSException *exception) {
             NSLog(@"%@",exception);
