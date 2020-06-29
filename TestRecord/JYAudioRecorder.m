@@ -300,8 +300,11 @@ void webRtcNS(NsHandle * handle, int samplerate, short samples[], unsigned int s
         
         [self.audioEngine disconnectNodeOutput:self.audioEngine.inputNode];
         
-        @try { // 避免因为之前没有connect node导致的闪退
+        if (self.audioPlayerNode.playing) {
             [self.audioPlayerNode stop];
+        }
+        
+        @try { // 避免因为之前没有connect node导致的闪退
             [self.audioEngine disconnectNodeInput:self.audioPlayerNode];
             [self.audioEngine disconnectNodeOutput:self.audioPlayerNode];
             [self.audioEngine detachNode:self.audioPlayerNode];
